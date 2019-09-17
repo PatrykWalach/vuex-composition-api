@@ -1,6 +1,6 @@
 import { State } from './state'
 
-export type inferState<S extends Record<string, State<any>>> = {
+export type inferState<S extends Record<string, State<any>> | undefined> = {
   [K in keyof S]: S[K] extends State<infer T> ? T : unknown
 }
 
@@ -12,12 +12,12 @@ export const mutable = <S extends Record<string, State<any>>>(
       return state[prop] && state[prop].value
     },
     set: (state, prop: keyof typeof state, _value) => {
-      state[prop].replace(_value)
+      state[prop]._replace(_value)
       return true
     },
   }) as inferState<S>
 
-export type MutationWrapper = <O, R, S extends Record<string, State<any>>>(
+export type Mutation = <O, R, S extends Record<string, State<any>>>(
   name: string,
   state: S,
   fn: (state: inferState<S>, payload: O) => R,

@@ -1,0 +1,16 @@
+language: node_js
+sudo: false
+node_js:
+- 10
+install:
+- npm i
+- npm i codecov -g
+script:
+- npm run coverage
+- codecov
+deploy:
+  provider: npm
+  email: patryk_walach@outlook.com
+  api_key: FeiOTA+8M//sBdf8GAuG/tn6N85ei8R5TToyG48MDPxxxl5qsVBRZnNDf4xraTrHQe5+y9xyqzOOTWMp+vHLflgt3WZAGZIVW2A+5mFddsVjyDHHKc4F+UN8rZ0vkOdabBYuPomEkZgolwNesDwlqKx5rCzIUuBvNcBRl+sI2/kg6O2+BL5XjsKYhirc07butLI++k8qy9YoXT4oh3Qp+dlpQLb7oGtCbXSqZAHFHAjCOwHEtUxwlen50Odx2t16BOV3WroZdsY6xy3ndNufQ+RXfnwHmpRU0Xj5PXw8QJDcmEKbKPY0n44Yn7RwJ9oYIrwR/+6bzrjaJDv/W7xcdisvjvr/FPI14oHk5NsD90/MRp8UQ/g2oUfxM7OUaSxrUOI60q9E2SaHNXSMRQDlhHMem5dmQccrIg+sumHrhiS38ttR8dwwfp+0vXgKiN+rGTgUE5x9ivVXlrGMSVMVsxhr3nbO3DSZcKwZX8T659bR07FTubAtX4ickKTX73nz8Hc0XK51Tfjel8iJEFm6uQtT1afyFeMw2/ShfAyUpWXFwgsYxCKovkeSNGI41D/RWzx9QKTPJC+A+RrC8ddZkMI/seJPAOqtNem6gJj7YdqpaoAa4WDjeJCddz3OOKNQP86tkseN4H7Mq/nz3X0bJHR3t2dNaqxmPJNsete/DmA=
+  on:
+    tags: true

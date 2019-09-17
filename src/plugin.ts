@@ -5,6 +5,8 @@ export const Plugin = (modules: Module<any>[]) => (store: Store<any>) =>
   modules.forEach(({ name, rawModule, subscribe }) => {
     store.registerModule(name, rawModule)
 
+    // store.subscribe()
+
     subscribe((mutationName, state, payload) => {
       store.commit(mutationName, payload)
     })
