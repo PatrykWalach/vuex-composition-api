@@ -17,7 +17,7 @@ export const mutable = <S extends Record<string, State<any>>>(
     },
   }) as inferState<S>
 
-export type Mutation = <O, R, S extends Record<string, State<any>>>(
+export type Mutation = <R, S extends Record<string, State<any>>, O = void>(
   name: string,
   state: S,
   fn: (state: inferState<S>, payload: O) => R,
