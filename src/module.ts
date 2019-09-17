@@ -1,6 +1,11 @@
 import { state, State } from './apis/state'
 import { getter, Getter } from './apis/getter'
-import { inferState, mutable } from './apis/mutation'
+import {
+  inferState,
+  mutable,
+  mutation as _mutation,
+  BoundMutation,
+} from './apis/mutation'
 
 import {
   Module as VuexModule,
@@ -10,8 +15,6 @@ import {
   GetterTree,
 } from 'vuex'
 
-import { Mutation } from './apis/mutation'
-
 export type SetupReturnType = {
   state?: Record<string, State<any>>
   getters?: Record<string, Getter<any>>
@@ -19,7 +22,7 @@ export type SetupReturnType = {
   actions?: Record<string, (payload: any) => any>
 }
 export type SetupContext = {
-  mutation: Mutation
+  mutation: BoundMutation
   state: <T>(value: T) => State<T>
   getter: <T>(value: () => T) => Getter<T>
 }
@@ -36,11 +39,8 @@ export class Module<R extends SetupReturnType> {
   name: string
   private _setup: R
   options: { namespaced?: boolean } = {}
-  private _subscribers: Subscriber[] = []
-  private _mutations: Record<
-    string,
-    (state: inferState<any>, payload: any) => any
-  > = {}
+  _subscribers: Subscriber[] = []
+  _mutations: Record<string, (state: inferState<any>, payload: any) => any> = {}
 
   constructor({
     name,
@@ -58,14 +58,8 @@ export class Module<R extends SetupReturnType> {
 
     const { subscribe: _subscribe } = this
 
-    const mutation: Mutation = (_name, state, fn) => {
-      const name = (namespaced ? this.name + '/' : '') + _name
-      this._mutations[_name] = fn
-
-      return payload => {
-        module._subscribers.forEach(callback => callback(name, state, payload))
-        return fn(mutable(state), payload)
-      }
+    const mutation: BoundMutation = (name, state, fn) => {
+      return _mutation(module, name, state, fn)
     }
 
     this.subscribe = function boundSubscribe(subscription) {

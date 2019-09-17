@@ -1,5 +1,6 @@
 export * from './apis/getter'
 export * from './apis/state'
+export * from './apis/mutation'
 
 import { Store } from 'vuex'
 import { Module } from './module'
