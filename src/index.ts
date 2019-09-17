@@ -7,5 +7,5 @@ import { Module } from './module'
 import { install } from './install'
 import { Plugin } from './plugin'
 
-const CompositionApiApi = { install, Store, Module, Plugin }
-export default CompositionApiApi
+const VuexCompositionApi = { install, Store, Module, Plugin }
+export default VuexCompositionApi
