@@ -1,0 +1,53 @@
+{
+  "name": "vuex-composition-modules",
+  "version": "1.0.0",
+  "description": "Make Vuex modules with syntax inspired by @vue/composition-api",
+  "main": "dist/index.js",
+  "module": "dist/index.es.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist/"
+  ],
+  "scripts": {
+    "build": "rollup -c",
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PatrykWalach/vuex-composition-api.git"
+  },
+  "keywords": [
+    "vue",
+    "composition-api",
+    "function-api",
+    "vuex",
+    "store",
+    "modules",
+    "typescript"
+  ],
+  "author": "Patryk Wałach",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/PatrykWalach/vuex-composition-api/issues"
+  },
+  "homepage": "https://github.com/PatrykWalach/vuex-composition-api#readme",
+  "peerDependencies": {
+    "vue": "^2.6.10",
+    "@vue/composition-api": "^0.3.1"
+  },
+  "dependencies": {
+    "vuex": "^3.1.1"
+  },
+  "devDependencies": {
+    "@types/node": "^12.7.5",
+    "@types/jest": "^24.0.18",
+    "@typescript-eslint/parser": "^2.3.0",
+    "eslint": "^6.4.0",
+    "jest": "^24.9.0",
+    "prettier": "^1.18.2",
+    "rollup": "^1.21.4",
+    "rollup-plugin-terser": "^5.1.2",
+    "rollup-plugin-typescript2": "^0.24.2",
+    "typescript": "^3.6.3"
+  }
+}
