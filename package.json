@@ -4,13 +4,13 @@
   "description": "Make Vuex modules with syntax inspired by @vue/composition-api",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
-  "types": "dist/index.d.ts",
+  "types": "dist/src/index.d.ts",
   "files": [
     "dist/"
   ],
   "scripts": {
     "lint": "eslint --fix src/**/*.ts{,x}",
-    "build": "rollup -c",
+    "build": "rollup -c && tsc",
     "test": "jest",
     "coverage": "jest --collect-coverage",
     "watch": "jest --watch"

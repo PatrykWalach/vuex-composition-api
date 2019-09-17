@@ -1,25 +1,9 @@
 {
   "compilerOptions": {
     "declaration": true,
-    "moduleResolution": "node",
-    "esModuleInterop": true,
-		"declarationDir": "./dist",
-		"module": "esnext",
-		"noImplicitAny": true,
-		"outDir": "./dist",
+    "outDir": "dist",
     "target": "esnext",
-    "strict": true,
-    "strictNullChecks": true,
-    "strictFunctionTypes": true,
-    "noFallthroughCasesInSwitch": true,
-    "noImplicitReturns": true,
-    "noImplicitThis": true,
-    "importHelpers": true,
-    "stripInternal": true,
-    "downlevelIteration": true,
-    "noUnusedLocals": true,
-    "skipLibCheck": true,
-    "baseUrl": ".",
+    "moduleResolution": "node",
     "types": [
       "node",
       "jest"
@@ -30,8 +14,7 @@
     ]
   },
   "include": [
-    "src/**/*.ts",
-    "tests/**/*.ts"
+    "src"
   ],
   "exclude": [
     "node_modules"
