@@ -1,10 +1,8 @@
-import { Module, SetupReturnType } from './module'
+import { Module } from './module'
 import { Store } from 'vuex'
 import { mutable } from './apis/mutation'
 
-export const Plugin = (modules: Module<SetupReturnType>[]) => (
-  store: Store<any>,
-) =>
+export const Plugin = (modules: Module<any>[]) => (store: Store<any>) =>
   modules.forEach(
     ({ name, state, rawModule, subscribe, _mutations, options }) => {
       store.registerModule(name, rawModule)
