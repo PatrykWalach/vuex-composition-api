@@ -44,21 +44,13 @@ describe('Module', () => {
 
   it('can be subscribed to', () => {
     let called = 0
-    const test = ['null']
-    Main.subscribe((name, state, payload) => {
+    const test = ['1']
+    Main.subscribe(({ type, payload }) => {
       called += 1
-      expect(name).toStrictEqual('DATA_PUSH')
+      expect(type).toStrictEqual('DATA_PUSH')
       expect(payload).toStrictEqual(test)
     })
     Main.mutations.DATA_PUSH(test)
     expect(called).toStrictEqual(1)
-  })
-
-  it('mutates state', () => {
-    const test = ['null']
-
-    const length = Main.state.data.value.length
-    Main.mutations.DATA_PUSH(test)
-    expect(Main.state.data.value.length).toStrictEqual(length + test.length)
   })
 })

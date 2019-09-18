@@ -28,8 +28,8 @@ export const Plugin = (modules: Module<SetupReturnType>[]) => (
         }
       })
 
-      subscribe((mutationName, state, payload) => {
-        store.commit(mutationName, payload)
+      subscribe(({ type, payload }) => {
+        store.commit(type, payload)
       })
     },
   )

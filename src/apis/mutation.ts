@@ -31,12 +31,12 @@ export type BoundMutation = <R, S extends Record<string, State<any>>, O = void>(
   fn: (state: inferState<S>, payload: O) => R,
 ) => (payload: O) => R
 
-export const mutation: Mutation = (module, _name, state, fn) => {
-  const name = (module.options.namespaced ? module.name + '/' : '') + _name
-  module._mutations[_name] = fn
+export const mutation: Mutation = (module, name, state, fn) => {
+  const type = (module.options.namespaced ? module.name + '/' : '') + name
+  module._mutations[name] = fn
 
   return payload => {
-    module._subscribers.forEach(callback => callback(name, state, payload))
+    module._subscribers.forEach(callback => callback({ type, payload }, state))
     return fn(mutable(state), payload)
   }
 }

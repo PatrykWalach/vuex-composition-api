@@ -30,9 +30,8 @@ export type SetupContext = {
 export type Setup<R extends SetupReturnType> = (options: SetupContext) => R
 
 export type Subscriber = <S extends Record<string, State<any>>, P>(
-  name: string,
+  fn: { type: string; payload: P },
   state: S,
-  payload: P,
 ) => any
 
 export class Module<R extends SetupReturnType> {
