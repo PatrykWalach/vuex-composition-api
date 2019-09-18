@@ -56,11 +56,11 @@ export class Module<R extends SetupReturnType> {
 
     const module = this
 
-    const { subscribe: _subscribe } = this
-
     const mutation: BoundMutation = (name, state, fn) => {
       return _mutation(module, name, state, fn)
     }
+
+    const { subscribe: _subscribe } = this
 
     this.subscribe = function boundSubscribe(subscription) {
       return _subscribe.call(module, subscription)
