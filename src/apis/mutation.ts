@@ -19,30 +19,44 @@ export const mutable = <S extends Record<string, State<any>>>(
   }) as inferState<S>
 
 export type BoundMutation = {
-  <S extends Record<string, State<any>>, O = undefined>(
+  <S extends Record<string, State<any>>>(
     name: string,
     state: S,
-    fn: (state: inferState<S>) => void,
-  ): () => void
+    fn: (state: inferState<S>, payload: void) => void,
+  ): (payload: void) => void
 
-  <S extends Record<string, State<any>>, O = undefined>(
+  <S extends Record<string, State<any>>, O>(
     name: string,
     state: S,
     fn: (state: inferState<S>, payload: O) => void,
   ): (payload: O) => void
 }
 
-export type Mutation = <S extends Record<string, State<any>>, O = undefined>(
+export type Mutation = {
+  <S extends Record<string, State<any>>>(
+    module: Module<any>,
+    name: string,
+    state: S,
+    fn: (state: inferState<S>, payload: void) => void,
+  ): (payload: void) => void
+
+  <S extends Record<string, State<any>>, O>(
+    module: Module<any>,
+    name: string,
+    state: S,
+    fn: (state: inferState<S>, payload: O) => void,
+  ): (payload: O) => void
+}
+
+export const mutation: Mutation = <S extends Record<string, State<any>>, O>(
   module: Module<any>,
   name: string,
   state: S,
-  fn: (state: inferState<S>, payload: O) => void,
-) => (payload?: O) => void
-
-export const mutation: Mutation = (module, name, state, fn) => {
+  fn: (state: inferState<S>, payload?: O) => void,
+) => {
   module._mutations[name] = fn
 
-  return payload => {
+  return (payload?: O) => {
     if (module._store) {
       const type = (module.options.namespaced ? module.name + '/' : '') + name
       module._store({ type, payload }, state)

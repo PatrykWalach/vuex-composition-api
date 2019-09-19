@@ -8,7 +8,7 @@ export const Plugin = (modules: Module<any>[]) => (store: Store<any>) =>
       store.registerModule(name, rawModule)
 
       store.subscribe(({ type, payload }) => {
-        let mutationName: string
+        let mutationName = ''
         if (options.namespaced) {
           const splitName = type.split('/')
 
@@ -21,7 +21,7 @@ export const Plugin = (modules: Module<any>[]) => (store: Store<any>) =>
         } else {
           mutationName = type
         }
-        if (_mutations.hasOwnProperty(mutationName)) {
+        if (mutationName && _mutations.hasOwnProperty(mutationName)) {
           _mutations[mutationName](mutable(state), payload)
         }
       })

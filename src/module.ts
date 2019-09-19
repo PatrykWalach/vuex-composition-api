@@ -39,7 +39,7 @@ export class Module<R extends SetupReturnType> {
   private _setup: R
   options: { namespaced?: boolean } = {}
   _subscribers: Subscriber[] = []
-  _store: Subscriber
+  _store: Subscriber | null = null
   _mutations: Record<string, (state: inferState<any>, payload: any) => any> = {}
 
   constructor({
@@ -56,8 +56,15 @@ export class Module<R extends SetupReturnType> {
 
     const module = this
 
-    const mutation: BoundMutation = (...args: Parameters<BoundMutation>) => {
-      return _mutation(module, ...args)
+    const mutation: BoundMutation = <
+      S extends Record<string, State<any>>,
+      O = void
+    >(
+      name: string,
+      state: S,
+      fn: (state: inferState<S>, payload?: O) => void,
+    ): ((payload?: O) => void) => {
+      return _mutation(module, name, state, fn)
     }
 
     const { subscribe: _subscribe, registerStore: _registerStore } = this
