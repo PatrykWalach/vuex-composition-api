@@ -31,20 +31,16 @@ describe('CompositionApi.Plugin', () => {
       name: 'main',
       namespaced: true,
       setup({ state, mutation }) {
-        const data = state([])
+        const data = state(0)
 
         return {
           state: {
             data,
           },
           mutations: {
-            PUSH_DATA: mutation(
-              'PUSH_DATA',
-              { data },
-              (state, payload: string) => {
-                state.data.push(payload)
-              },
-            ),
+            BUMP_DATA: mutation('BUMP_DATA', { data }, state => {
+              state.data += 1
+            }),
           },
         }
       },
@@ -54,10 +50,10 @@ describe('CompositionApi.Plugin', () => {
       plugins: [CompositionApi.Plugin([Main])],
     })
 
-    Main.mutations.PUSH_DATA('test')
+    Main.mutations.BUMP_DATA()
 
-    expect(Main.state.data.value.length).toStrictEqual(1)
-    expect(store.state.main.data.length).toStrictEqual(1)
+    expect(Main.state.data.value).toStrictEqual(1)
+    expect(store.state.main.data).toStrictEqual(1)
   })
 
   it('dispatches mutations from Vuex', () => {
@@ -65,20 +61,16 @@ describe('CompositionApi.Plugin', () => {
       name: 'main',
       namespaced: true,
       setup({ state, mutation }) {
-        const data = state([])
+        const data = state(0)
 
         return {
           state: {
             data,
           },
           mutations: {
-            PUSH_DATA: mutation(
-              'PUSH_DATA',
-              { data },
-              (state, payload: string) => {
-                state.data.push(payload)
-              },
-            ),
+            BUMP_DATA: mutation('BUMP_DATA', { data }, state => {
+              state.data += 1
+            }),
           },
         }
       },
@@ -88,9 +80,9 @@ describe('CompositionApi.Plugin', () => {
       plugins: [CompositionApi.Plugin([Main])],
     })
 
-    store.commit('main/PUSH_DATA', 'test')
+    store.commit('main/BUMP_DATA')
 
-    expect(Main.state.data.value.length).toStrictEqual(1)
-    expect(store.state.main.data.length).toStrictEqual(1)
+    expect(Main.state.data.value).toStrictEqual(1)
+    expect(store.state.main.data).toStrictEqual(1)
   })
 })
