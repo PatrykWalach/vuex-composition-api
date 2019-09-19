@@ -20,11 +20,11 @@ describe('Module', () => {
         )
 
         return {
-          state: {
-            data,
-          },
           mutations: {
             CHANGE_DATA,
+          },
+          state: {
+            data,
           },
         }
       },

@@ -1,7 +1,6 @@
-import CompositionApi, { state, mutable, mutation } from '../../src'
-
-import { createLocalVue } from '@vue/test-utils'
+import CompositionApi, { mutable, mutation, state } from '../../src'
 import VuexCompositionApi from '../../src'
+import { createLocalVue } from '@vue/test-utils'
 
 const localVue = createLocalVue()
 localVue.use(CompositionApi)

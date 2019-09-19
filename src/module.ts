@@ -1,19 +1,19 @@
-import { state, State } from './apis/state'
-import { getter, Getter } from './apis/getter'
+// import 'core-js/features/object/fromEntries'
 import {
-  inferState,
-  mutable,
-  mutation as _mutation,
-  BoundMutation,
-} from './apis/mutation'
-
-import {
+  ActionContext,
+  ActionTree,
+  GetterTree,
   Module as VuexModule,
   Mutation as VuexMutation,
-  ActionTree,
-  ActionContext,
-  GetterTree,
 } from 'vuex'
+import {
+  BoundMutation,
+  mutation as _mutation,
+  inferState,
+  mutable,
+} from './apis/mutation'
+import { Getter, getter } from './apis/getter'
+import { State, state } from './apis/state'
 
 export type SetupReturnType = {
   state?: Record<string, State<any>>

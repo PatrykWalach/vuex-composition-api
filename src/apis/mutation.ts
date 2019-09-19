@@ -1,5 +1,5 @@
-import { State } from './state'
 import { Module } from '../module'
+import { State } from './state'
 
 export type inferState<S extends Record<string, State<any>> | undefined> = {
   [K in keyof S]: S[K] extends State<infer T> ? T : unknown
