@@ -39,6 +39,7 @@ export class Module<R extends SetupReturnType> {
   private _setup: R
   options: { namespaced?: boolean } = {}
   _subscribers: Subscriber[] = []
+  _store: Subscriber
   _mutations: Record<string, (state: inferState<any>, payload: any) => any> = {}
 
   constructor({
@@ -59,10 +60,14 @@ export class Module<R extends SetupReturnType> {
       return _mutation(module, name, state, fn)
     }
 
-    const { subscribe: _subscribe } = this
+    const { subscribe: _subscribe, registerStore: _registerStore } = this
 
     this.subscribe = function boundSubscribe(subscription) {
       return _subscribe.call(module, subscription)
+    }
+
+    this.registerStore = function boundRegisterStore(subscription) {
+      return _registerStore.call(module, subscription)
     }
 
     this._setup = setup({ mutation, state, getter })
@@ -70,6 +75,10 @@ export class Module<R extends SetupReturnType> {
 
   subscribe(subscriber: Subscriber) {
     this._subscribers.push(subscriber)
+  }
+
+  registerStore(store: Subscriber) {
+    this._store = store
   }
 
   get state(): R['state'] {

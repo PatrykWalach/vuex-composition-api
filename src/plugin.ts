@@ -4,7 +4,7 @@ import { mutable } from './apis/mutation'
 
 export const Plugin = (modules: Module<any>[]) => (store: Store<any>) =>
   modules.forEach(
-    ({ name, state, rawModule, subscribe, _mutations, options }) => {
+    ({ name, state, rawModule, registerStore, _mutations, options }) => {
       store.registerModule(name, rawModule)
 
       store.subscribe(({ type, payload }) => {
@@ -26,7 +26,7 @@ export const Plugin = (modules: Module<any>[]) => (store: Store<any>) =>
         }
       })
 
-      subscribe(({ type, payload }) => {
+      registerStore(({ type, payload }) => {
         store.commit(type, payload)
       })
     },

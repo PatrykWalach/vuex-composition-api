@@ -18,25 +18,35 @@ export const mutable = <S extends Record<string, State<any>>>(
     },
   }) as inferState<S>
 
-export type Mutation = <R, S extends Record<string, State<any>>, O = void>(
+export type BoundMutation = <
+  S extends Record<string, State<any>>,
+  O = undefined
+>(
+  name: string,
+  state: S,
+  fn: (state: inferState<S>, payload: O) => void,
+) => (payload: O) => void
+
+export type Mutation = <S extends Record<string, State<any>>, O = undefined>(
   module: Module<any>,
   name: string,
   state: S,
-  fn: (state: inferState<S>, payload: O) => R,
-) => (payload: O) => R
-
-export type BoundMutation = <R, S extends Record<string, State<any>>, O = void>(
-  name: string,
-  state: S,
-  fn: (state: inferState<S>, payload: O) => R,
-) => (payload: O) => R
+  fn: (state: inferState<S>, payload: O) => void,
+) => (payload: O) => void
 
 export const mutation: Mutation = (module, name, state, fn) => {
-  const type = (module.options.namespaced ? module.name + '/' : '') + name
   module._mutations[name] = fn
 
   return payload => {
-    module._subscribers.forEach(callback => callback({ type, payload }, state))
-    return fn(mutable(state), payload)
+    if (module._store) {
+      const type = (module.options.namespaced ? module.name + '/' : '') + name
+      module._store({ type, payload }, state)
+    } else {
+      fn(mutable(state), payload)
+    }
+
+    module._subscribers.forEach(callback =>
+      callback({ type: name, payload }, state),
+    )
   }
 }
