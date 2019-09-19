@@ -27,23 +27,22 @@ describe('CompositionApi.Plugin', () => {
   })
 
   it('dispatches mutations inside Vuex', () => {
-    const test = 'null'
-
     const Main = new CompositionApi.Module({
       name: 'main',
       namespaced: true,
       setup({ state, mutation }) {
-        const data = state('')
+        const data = state([])
+
         return {
           state: {
             data,
           },
           mutations: {
-            CHANGE_DATA: mutation(
-              'CHANGE_DATA',
+            PUSH_DATA: mutation(
+              'PUSH_DATA',
               { data },
               (state, payload: string) => {
-                state.data = payload
+                state.data.push(payload)
               },
             ),
           },
@@ -55,29 +54,29 @@ describe('CompositionApi.Plugin', () => {
       plugins: [CompositionApi.Plugin([Main])],
     })
 
-    Main.mutations.CHANGE_DATA(test)
+    Main.mutations.PUSH_DATA('test')
 
-    expect(store.state.main.data).toStrictEqual(test)
+    expect(Main.state.data.value.length).toStrictEqual(1)
+    expect(store.state.main.data.length).toStrictEqual(1)
   })
 
   it('dispatches mutations from Vuex', () => {
-    const test = 'null'
-
     const Main = new CompositionApi.Module({
       name: 'main',
       namespaced: true,
       setup({ state, mutation }) {
-        const data = state('')
+        const data = state([])
+
         return {
           state: {
             data,
           },
           mutations: {
-            CHANGE_DATA: mutation(
-              'CHANGE_DATA',
+            PUSH_DATA: mutation(
+              'PUSH_DATA',
               { data },
               (state, payload: string) => {
-                state.data = payload
+                state.data.push(payload)
               },
             ),
           },
@@ -89,8 +88,9 @@ describe('CompositionApi.Plugin', () => {
       plugins: [CompositionApi.Plugin([Main])],
     })
 
-    store.commit('main/CHANGE_DATA', test)
+    store.commit('main/PUSH_DATA', 'test')
 
-    expect(Main.state.data.value).toStrictEqual(test)
+    expect(Main.state.data.value.length).toStrictEqual(1)
+    expect(store.state.main.data.length).toStrictEqual(1)
   })
 })
