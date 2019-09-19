@@ -56,8 +56,8 @@ export class Module<R extends SetupReturnType> {
 
     const module = this
 
-    const mutation: BoundMutation = (name, state, fn) => {
-      return _mutation(module, name, state, fn)
+    const mutation: BoundMutation = (...args: Parameters<BoundMutation>) => {
+      return _mutation(module, ...args)
     }
 
     const { subscribe: _subscribe, registerStore: _registerStore } = this

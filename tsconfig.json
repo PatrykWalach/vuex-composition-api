@@ -4,6 +4,8 @@
     "outDir": "dist",
     "target": "esnext",
     "moduleResolution": "node",
+    "esModuleInterop":true,
+    "noImplicitAny":true,
     "types": [
       "node",
       "jest"
@@ -14,7 +16,8 @@
     ]
   },
   "include": [
-    "src"
+    "src",
+    "tests"
   ],
   "exclude": [
     "node_modules"

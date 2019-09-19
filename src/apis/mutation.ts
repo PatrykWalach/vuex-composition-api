@@ -18,21 +18,26 @@ export const mutable = <S extends Record<string, State<any>>>(
     },
   }) as inferState<S>
 
-export type BoundMutation = <
-  S extends Record<string, State<any>>,
-  O = undefined
->(
-  name: string,
-  state: S,
-  fn: (state: inferState<S>, payload: O) => void,
-) => (payload: O) => void
+export type BoundMutation = {
+  <S extends Record<string, State<any>>, O = undefined>(
+    name: string,
+    state: S,
+    fn: (state: inferState<S>) => void,
+  ): () => void
+
+  <S extends Record<string, State<any>>, O = undefined>(
+    name: string,
+    state: S,
+    fn: (state: inferState<S>, payload: O) => void,
+  ): (payload: O) => void
+}
 
 export type Mutation = <S extends Record<string, State<any>>, O = undefined>(
   module: Module<any>,
   name: string,
   state: S,
   fn: (state: inferState<S>, payload: O) => void,
-) => (payload: O) => void
+) => (payload?: O) => void
 
 export const mutation: Mutation = (module, name, state, fn) => {
   module._mutations[name] = fn
