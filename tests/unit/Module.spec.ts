@@ -1,5 +1,6 @@
 import CompositionApi from '../../src'
 import { createLocalVue } from '@vue/test-utils'
+import { mapActions } from '../../src/module'
 
 const localVue = createLocalVue()
 localVue.use(CompositionApi)
@@ -46,4 +47,9 @@ describe('Module', () => {
 
 // describe('mapState', () => {})
 // describe('mapGetters', () => {})
-// describe('mapActions', () => {})
+describe('mapActions', () => {
+  const action = (n: number) => n ** 2
+
+  const mapped = mapActions({ action })
+  expect(mapped.action({}, 2)).toStrictEqual(4)
+})

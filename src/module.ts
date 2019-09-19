@@ -1,4 +1,4 @@
-// import 'core-js/features/object/fromEntries'
+import 'core-js/es/object/from-entries'
 import {
   ActionContext,
   ActionTree,
@@ -77,7 +77,7 @@ export class Module<R extends SetupReturnType> {
       return _registerStore.call(module, subscription)
     }
 
-    this._setup = setup({ mutation, state, getter })
+    this._setup = setup({ getter, mutation, state })
   }
 
   subscribe(subscriber: Subscriber) {
@@ -120,25 +120,26 @@ export class Module<R extends SetupReturnType> {
 
     const mutations = _mutations
 
-    const actions = mapActions(_actions)
+    const actions =
+      _actions && mapActions(_actions as NonNullable<R['actions']>)
 
     const { namespaced } = options
 
     return {
-      state,
+      actions,
       getters,
       mutations,
-      actions,
       namespaced,
+      state,
     }
   }
 }
 
-const mapState = <S extends Record<string, State<any>>>(
+export const mapState = <S extends Record<string, State<any>>>(
   state: S,
 ): inferState<S> => Object.assign({}, mutable(state))
 
-const mapGetters = (
+export const mapGetters = (
   getters: SetupReturnType['getters'],
 ): GetterTree<any, any> =>
   (getters &&
@@ -146,15 +147,24 @@ const mapGetters = (
       Object.entries(getters).map(([key, getter]) => [key, getter._getter]),
     )) as GetterTree<any, any>
 
-const mapActions = <S, R>(
-  actions: SetupReturnType['actions'],
-): ActionTree<S, R> =>
-  (actions &&
-    Object.fromEntries(
-      Object.entries(actions).map(
-        <P, R>([key, action]: [string, (payload: P) => R]) => [
-          key,
-          (context: ActionContext<S, R>, payload: P) => action(payload),
-        ],
-      ),
-    )) as ActionTree<S, R>
+export const mapActions = <A extends NonNullable<SetupReturnType['actions']>>(
+  actions: A,
+): {
+  [K in keyof A]: (
+    context: any,
+    payload: Parameters<A[K]>[0],
+  ) => ReturnType<A[K]>
+} =>
+  Object.fromEntries(
+    Object.entries(actions).map(
+      <P, R>([key, action]: [string, (payload: P) => R]) => [
+        key,
+        (context: any, payload: P) => action(payload),
+      ],
+    ),
+  ) as {
+    [K in keyof A]: (
+      context: any,
+      payload: Parameters<A[K]>[0],
+    ) => ReturnType<A[K]>
+  }

@@ -143,18 +143,23 @@ describe('CompositionApi.Plugin', () => {
     expect(Main.state.data.value).toStrictEqual(1)
     expect(store.state.main.data).toStrictEqual(1)
   })
+
   it('dispatches actions from Vuex', () => {
     const Main = new CompositionApi.Module({
       name: 'main',
       setup({ state, mutation }) {
         const data = state(0)
+
         const BUMP_DATA = mutation('BUMP_DATA', { data }, state => {
           state.data += 1
         })
+
         return {
           actions: {
-            bumpDataBy(n: number) {
-              Array(n).forEach(BUMP_DATA)
+            bumpDataBy: (n: number) => {
+              for (let i = 0; i < n; i++) {
+                BUMP_DATA()
+              }
             },
           },
           mutations: {
@@ -191,8 +196,10 @@ describe('CompositionApi.Plugin', () => {
 
         return {
           actions: {
-            bumpDataBy(n: number) {
-              Array(n).forEach(BUMP_DATA)
+            bumpDataBy: (n: number) => {
+              for (let i = 0; i < n; i++) {
+                BUMP_DATA()
+              }
             },
           },
           mutations: {
@@ -210,7 +217,7 @@ describe('CompositionApi.Plugin', () => {
     })
 
     const test = 6
-    store.dispatch('bumpDataBy', test)
+    store.dispatch('main/bumpDataBy', test)
 
     expect(Main.state.data.value).toStrictEqual(test)
     expect(store.state.main.data).toStrictEqual(test)
