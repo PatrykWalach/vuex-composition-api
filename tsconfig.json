@@ -1,11 +1,13 @@
 {
   "compilerOptions": {
-    "declaration": true,
-    "outDir": "dist",
+    "strict": true,
+    "outDir": "types",
+    "module": "esnext",
     "target": "esnext",
     "moduleResolution": "node",
     "esModuleInterop":true,
     "noImplicitAny":true,
+    "sourceMap": true,
     "types": [
       "node",
       "jest"
@@ -16,8 +18,8 @@
     ]
   },
   "include": [
-    "src",
-    "tests"
+    "src/**/*.ts",
+    "tests/**/*.ts",
   ],
   "exclude": [
     "node_modules"
