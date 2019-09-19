@@ -14,7 +14,8 @@
       "jest"
     ],
     "lib": [
-      "esnext"
+      "esnext",
+      "dom"
     ]
   },
   "include": [
