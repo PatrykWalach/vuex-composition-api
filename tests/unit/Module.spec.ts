@@ -1,4 +1,4 @@
-import CompositionApi, { inferState } from '../../src'
+import CompositionApi from '../../src'
 import { createLocalVue } from '@vue/test-utils'
 
 const localVue = createLocalVue()
@@ -14,12 +14,7 @@ describe('Module', () => {
         const CHANGE_DATA = mutation(
           'CHANGE_DATA',
           { data },
-          (
-            state: inferState<{
-              data: typeof data
-            }>,
-            value: { y: string },
-          ) => {
+          (state, value: { y: string }) => {
             state.data = value
           },
         )
@@ -48,3 +43,7 @@ describe('Module', () => {
     expect(called).toStrictEqual(1)
   })
 })
+
+// describe('mapState', () => {})
+// describe('mapGetters', () => {})
+// describe('mapActions', () => {})

@@ -59,6 +59,35 @@ describe('CompositionApi.Plugin', () => {
   it('dispatches mutations from Vuex', () => {
     const Main = new CompositionApi.Module({
       name: 'main',
+      setup({ state, mutation }) {
+        const data = state(0)
+
+        return {
+          state: {
+            data,
+          },
+          mutations: {
+            BUMP_DATA: mutation('BUMP_DATA', { data }, state => {
+              state.data += 1
+            }),
+          },
+        }
+      },
+    })
+
+    const store = new CompositionApi.Store({
+      plugins: [CompositionApi.Plugin([Main])],
+    })
+
+    store.commit('BUMP_DATA')
+
+    expect(Main.state.data.value).toStrictEqual(1)
+    expect(store.state.main.data).toStrictEqual(1)
+  })
+
+  it('dispatches namespaced mutations from Vuex', () => {
+    const Main = new CompositionApi.Module({
+      name: 'main',
       namespaced: true,
       setup({ state, mutation }) {
         const data = state(0)
