@@ -1,18 +1,16 @@
 import 'core-js/es/object/from-entries'
 import {
-  ActionContext,
-  ActionTree,
-  GetterTree,
-  Module as VuexModule,
-  Mutation as VuexMutation,
-} from 'vuex'
-import {
   BoundMutation,
   mutation as _mutation,
   inferState,
   mutable,
 } from './apis/mutation'
 import { Getter, getter } from './apis/getter'
+import {
+  GetterTree,
+  Module as VuexModule,
+  Mutation as VuexMutation,
+} from 'vuex'
 import { State, state } from './apis/state'
 
 export type SetupReturnType = {
