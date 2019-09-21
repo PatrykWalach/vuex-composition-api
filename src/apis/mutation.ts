@@ -59,13 +59,13 @@ export const mutation: Mutation = <S extends Record<string, State<any>>, O>(
   return (payload?: O) => {
     if (module._store) {
       const type = (module.options.namespaced ? module.name + '/' : '') + name
-      module._store({ type, payload }, state)
+      module._store({ payload, type }, state)
     } else {
       fn(mutable(state), payload)
     }
 
     module._subscribers.forEach(callback =>
-      callback({ type: name, payload }, state),
+      callback({ payload, type: name }, state),
     )
   }
 }
