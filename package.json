@@ -3,7 +3,7 @@
   "version": "0.1.14",
   "description": "Make Vuex modules with syntax inspired by @vue/composition-api",
   "main": "dist/index.js",
-  "module": "dist/index.module.js",
+  "module": "dist/index.es.js",
   "types": "dist/index.d.ts",
   "files": [
     "dist/"
@@ -52,6 +52,8 @@
     "jest": "^24.9.0",
     "prettier": "^1.18.2",
     "rollup": "^1.21.4",
+    "rollup-plugin-commonjs": "^10.1.0",
+    "rollup-plugin-node-resolve": "^5.2.0",
     "rollup-plugin-terser": "^5.1.2",
     "rollup-plugin-typescript2": "^0.24.2",
     "ts-jest": "^24.1.0",

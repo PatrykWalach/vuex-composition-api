@@ -1,4 +1,4 @@
-import 'core-js/es/object/from-entries'
+import 'core-js/features/object/from-entries'
 import {
   BoundMutation,
   mutation as _mutation,
@@ -6,12 +6,8 @@ import {
   mutable,
 } from './apis/mutation'
 import { Getter, getter } from './apis/getter'
-import {
-  GetterTree,
-  Module as VuexModule,
-  Mutation as VuexMutation,
-} from 'vuex'
 import { State, state } from './apis/state'
+import { Module as VuexModule, Mutation as VuexMutation } from 'vuex'
 
 export type SetupReturnType = {
   state?: Record<string, State<any>>
@@ -114,7 +110,8 @@ export class Module<R extends SetupReturnType> {
 
     const state = _state && mapState(_state)
 
-    const getters = mapGetters(_getters)
+    const getters =
+      _getters && mapGetters(_getters as NonNullable<R['getters']>)
 
     const mutations = _mutations
 
@@ -137,13 +134,16 @@ export const mapState = <S extends Record<string, State<any>>>(
   state: S,
 ): inferState<S> => Object.assign({}, mutable(state))
 
-export const mapGetters = (
-  getters: SetupReturnType['getters'],
-): GetterTree<any, any> =>
-  (getters &&
-    Object.fromEntries(
-      Object.entries(getters).map(([key, getter]) => [key, getter._getter]),
-    )) as GetterTree<any, any>
+export const mapGetters = <G extends NonNullable<SetupReturnType['getters']>>(
+  getters: G,
+): {
+  [K in keyof G]: () => G[K]
+} =>
+  Object.fromEntries(
+    Object.entries(getters).map(([key, getter]) => [key, getter._getter]),
+  ) as {
+    [K in keyof G]: () => G[K]
+  }
 
 export const mapActions = <A extends NonNullable<SetupReturnType['actions']>>(
   actions: A,
