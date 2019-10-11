@@ -61,25 +61,17 @@ export class Module<R extends SetupReturnType> {
       return _mutation(module, name, state, fn)
     }
 
-    const { subscribe: _subscribe, registerStore: _registerStore } = this
-
-    this.subscribe = function boundSubscribe(subscription) {
-      return _subscribe.call(module, subscription)
-    }
-
-    this.registerStore = function boundRegisterStore(subscription) {
-      return _registerStore.call(module, subscription)
-    }
-
     this._setup = setup({ getter, mutation, state })
   }
 
-  subscribe(subscriber: Subscriber) {
-    this._subscribers.push(subscriber)
+  get subscribe() {
+    return (subscriber: Subscriber) => this._subscribers.push(subscriber)
   }
 
-  registerStore(store: Subscriber) {
-    this._store = store
+  get registerStore() {
+    return (store: Subscriber) => {
+      this._store = store
+    }
   }
 
   get state(): R['state'] {
