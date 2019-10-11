@@ -1,6 +1,6 @@
 {
   "name": "vuex-composition-api",
-  "version": "0.1.15",
+  "version": "0.1.16",
   "description": "Make Vuex modules with syntax inspired by @vue/composition-api",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
