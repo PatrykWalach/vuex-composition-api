@@ -5,7 +5,7 @@ const localVue = createLocalVue()
 
 localVue.use(CompositionApi)
 
-describe('CompositionApi.Plugin', () => {
+describe('CompositionApi.plugin', () => {
   it('registers modules', () => {
     const test = 'null'
     const Main = new CompositionApi.Module({
@@ -20,7 +20,7 @@ describe('CompositionApi.Plugin', () => {
       },
     })
     const store = new CompositionApi.Store({
-      plugins: [CompositionApi.Plugin([Main])],
+      plugins: [CompositionApi.plugin([Main])],
     })
 
     expect(store.state.main.data).toStrictEqual(test)
@@ -46,7 +46,7 @@ describe('CompositionApi.Plugin', () => {
     })
 
     const store = new CompositionApi.Store({
-      plugins: [CompositionApi.Plugin([Main])],
+      plugins: [CompositionApi.plugin([Main])],
     })
 
     Main.mutations.BUMP_DATA()
@@ -76,7 +76,7 @@ describe('CompositionApi.Plugin', () => {
     })
 
     const store = new CompositionApi.Store({
-      plugins: [CompositionApi.Plugin([Main])],
+      plugins: [CompositionApi.plugin([Main])],
     })
 
     Main.mutations.BUMP_DATA()
@@ -105,7 +105,7 @@ describe('CompositionApi.Plugin', () => {
     })
 
     const store = new CompositionApi.Store({
-      plugins: [CompositionApi.Plugin([Main])],
+      plugins: [CompositionApi.plugin([Main])],
     })
 
     store.commit('BUMP_DATA')
@@ -135,7 +135,7 @@ describe('CompositionApi.Plugin', () => {
     })
 
     const store = new CompositionApi.Store({
-      plugins: [CompositionApi.Plugin([Main])],
+      plugins: [CompositionApi.plugin([Main])],
     })
 
     store.commit('main/BUMP_DATA')
@@ -173,7 +173,7 @@ describe('CompositionApi.Plugin', () => {
     })
 
     const store = new CompositionApi.Store({
-      plugins: [CompositionApi.Plugin([Main])],
+      plugins: [CompositionApi.plugin([Main])],
     })
 
     const test = 6
@@ -213,7 +213,7 @@ describe('CompositionApi.Plugin', () => {
     })
 
     const store = new CompositionApi.Store({
-      plugins: [CompositionApi.Plugin([Main])],
+      plugins: [CompositionApi.plugin([Main])],
     })
 
     const test = 6

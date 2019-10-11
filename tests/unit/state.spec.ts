@@ -1,7 +1,6 @@
 import CompositionApi, { state } from '../../src'
-import { isRef } from '@vue/composition-api'
-
 import { createLocalVue } from '@vue/test-utils'
+import { isRef } from '@vue/composition-api'
 
 const localVue = createLocalVue()
 localVue.use(CompositionApi)
