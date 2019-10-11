@@ -2,7 +2,10 @@ export * from './apis/getter'
 export * from './apis/state'
 export * from './apis/mutation'
 
-export { Module } from './module'
-export { plugin } from './plugin'
-export { Store } from 'vuex'
-export { install as default } from './install'
+import { Module } from './module'
+import { Store } from 'vuex'
+import { install } from './install'
+import { plugin } from './plugin'
+
+const VuexCompositionApi = { Module, Store, install, plugin }
+export default VuexCompositionApi
