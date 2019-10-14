@@ -9,28 +9,52 @@ import { Getter, getter } from './apis/getter'
 import { State, state } from './apis/state'
 import { Module as VuexModule, Mutation as VuexMutation } from 'vuex'
 
-export type SetupReturnType = {
-  state?: Record<string, State<any>>
-  getters?: Record<string, Getter<any>>
-  mutations?: Record<string, VuexMutation<any>>
-  actions?: Record<string, (payload: any) => any>
-}
+export type StateTree = Record<string, State<any>>
+
+export type GetterTree = Record<string, Getter<any>>
+
+export type MutationTree = Record<string, VuexMutation<any>>
+
+export type ActionTree = Record<string, (payload: any) => any>
+
 export type SetupContext = {
   mutation: BoundMutation
   state: <T>(value: T) => State<T>
   getter: <T>(value: () => T) => Getter<T>
 }
 
-export type Setup<R extends SetupReturnType> = (options: SetupContext) => R
+export type Setup<
+  S extends StateTree,
+  G extends GetterTree,
+  M extends MutationTree,
+  A extends ActionTree
+> = (
+  options: SetupContext,
+) => {
+  state: S
+  getters: G
+  mutations: M
+  actions: A
+}
 
 export type Subscriber = <S extends Record<string, State<any>>, P>(
   fn: { type: string; payload: P },
   state: S,
 ) => any
 
-export class Module<R extends SetupReturnType> {
+export class Module<
+  S extends StateTree = any,
+  G extends GetterTree = any,
+  M extends MutationTree = any,
+  A extends ActionTree = any
+> {
   name: string
-  private _setup: R
+  private _setup: {
+    state: S
+    getters: G
+    mutations: M
+    actions: A
+  }
   options: { namespaced?: boolean } = {}
   _subscribers: Subscriber[] = []
   _store: Subscriber | null = null
@@ -42,7 +66,7 @@ export class Module<R extends SetupReturnType> {
     namespaced = false,
   }: {
     name: string
-    setup: Setup<R>
+    setup: Setup<S, G, M, A>
     namespaced?: boolean
   }) {
     this.name = name
@@ -74,23 +98,23 @@ export class Module<R extends SetupReturnType> {
     }
   }
 
-  get state(): R['state'] {
+  get state(): S {
     return this._setup.state
   }
 
-  get getters(): R['getters'] {
+  get getters(): G {
     return this._setup.getters
   }
 
-  get mutations(): R['mutations'] {
+  get mutations(): M {
     return this._setup.mutations
   }
 
-  get actions(): R['actions'] {
+  get actions(): A {
     return this._setup.actions
   }
 
-  get rawModule(): VuexModule<inferState<R['state']>, any> {
+  get rawModule(): VuexModule<inferState<S>, any> {
     const {
       getters: _getters,
       _mutations,
@@ -98,17 +122,16 @@ export class Module<R extends SetupReturnType> {
       _setup,
       options,
     } = this
+
     const { state: _state } = _setup
 
-    const state = _state && mapState(_state)
+    const state = _state && mapState(_state as NonNullable<S>)
 
-    const getters =
-      _getters && mapGetters(_getters as NonNullable<R['getters']>)
+    const getters = _getters && mapGetters(_getters as NonNullable<G>)
 
     const mutations = _mutations
 
-    const actions =
-      _actions && mapActions(_actions as NonNullable<R['actions']>)
+    const actions = _actions && mapActions(_actions as NonNullable<A>)
 
     const { namespaced } = options
 
@@ -122,11 +145,11 @@ export class Module<R extends SetupReturnType> {
   }
 }
 
-export const mapState = <S extends Record<string, State<any>>>(
+export const mapState = <S extends NonNullable<StateTree>>(
   state: S,
 ): inferState<S> => Object.assign({}, mutable(state))
 
-export const mapGetters = <G extends NonNullable<SetupReturnType['getters']>>(
+export const mapGetters = <G extends NonNullable<GetterTree>>(
   getters: G,
 ): {
   [K in keyof G]: () => G[K]
@@ -137,7 +160,7 @@ export const mapGetters = <G extends NonNullable<SetupReturnType['getters']>>(
     [K in keyof G]: () => G[K]
   }
 
-export const mapActions = <A extends NonNullable<SetupReturnType['actions']>>(
+export const mapActions = <A extends NonNullable<ActionTree>>(
   actions: A,
 ): {
   [K in keyof A]: (

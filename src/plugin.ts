@@ -2,7 +2,9 @@ import { Module } from './module'
 import { Store } from 'vuex'
 import { mutable } from './apis/mutation'
 
-export const plugin = (modules: Module<any>[]) => (store: Store<any>) =>
+export const plugin = (modules: Module[]) => (
+  store: Store<any>,
+) =>
   modules.forEach(
     ({ name, state, rawModule, registerStore, _mutations, options }) => {
       store.registerModule(name, rawModule)
