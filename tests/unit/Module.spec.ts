@@ -43,6 +43,41 @@ describe('Module', () => {
     Main.mutations.CHANGE_DATA(test)
     expect(called).toStrictEqual(1)
   })
+
+  it('can take just a setup function', () => {
+    const Main = new Module(({ mutation, state }) => {
+      const data = state({})
+
+      const CHANGE_DATA = mutation(
+        'CHANGE_DATA',
+        { data },
+        (state, value: { y: string }) => {
+          state.data = value
+        },
+      )
+
+      return {
+        mutations: {
+          CHANGE_DATA,
+        },
+        state: {
+          data,
+        },
+      }
+    })
+
+    let called = 0
+    const test = { y: '1' }
+
+    Main.subscribe(({ type, payload }) => {
+      called += 1
+      expect(type).toStrictEqual('CHANGE_DATA')
+      expect(payload).toStrictEqual(test)
+    })
+
+    Main.mutations.CHANGE_DATA(test)
+    expect(called).toStrictEqual(1)
+  })
 })
 
 // describe('mapState', () => {})

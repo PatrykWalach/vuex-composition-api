@@ -34,14 +34,14 @@ export type BoundMutation = {
 
 export type Mutation = {
   <S extends Record<string, State<any>>>(
-    module: Module<any>,
+    module: Module,
     name: string,
     state: S,
     fn: (state: inferState<S>, payload: void) => void,
   ): (payload: void) => void
 
   <S extends Record<string, State<any>>, O>(
-    module: Module<any>,
+    module: Module,
     name: string,
     state: S,
     fn: (state: inferState<S>, payload: O) => void,
@@ -49,7 +49,7 @@ export type Mutation = {
 }
 
 export const mutation: Mutation = <S extends Record<string, State<any>>, O>(
-  module: Module<any>,
+  module: Module,
   name: string,
   state: S,
   fn: (state: inferState<S>, payload?: O) => void,

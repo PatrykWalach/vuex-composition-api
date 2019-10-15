@@ -28,26 +28,23 @@ export type Subscriber = <S extends Record<string, State<any>>, P>(
   state: S,
 ) => any
 
-export class Module<R extends SetupReturnType> {
-  name: string
+export class Module<R extends SetupReturnType = any> {
+  name: string | null
   private _setup: R
   options: { namespaced?: boolean } = {}
   _subscribers: Subscriber[] = []
   _store: Subscriber | null = null
   _mutations: Record<string, (state: inferState<any>, payload: any) => any> = {}
 
-  constructor({
-    name,
-    setup,
-    namespaced = false,
-  }: {
-    name: string
-    setup: Setup<R>
-    namespaced?: boolean
-  }) {
-    this.name = name
-    this.options = { namespaced }
-
+  constructor(
+    options:
+      | {
+          setup: Setup<R>
+          name?: string
+          namespaced?: boolean
+        }
+      | Setup<R>,
+  ) {
     const module = this
 
     const mutation: BoundMutation = <
@@ -61,7 +58,16 @@ export class Module<R extends SetupReturnType> {
       return _mutation(module, name, state, fn)
     }
 
-    this._setup = setup({ getter, mutation, state })
+    if (options instanceof Function) {
+      this.name = null
+      this.options = { namespaced: false }
+      this._setup = options({ getter, mutation, state })
+    } else {
+      const { setup, name = null, namespaced = false } = options
+      this.name = name
+      this.options = { namespaced }
+      this._setup = setup({ getter, mutation, state })
+    }
   }
 
   get subscribe() {
