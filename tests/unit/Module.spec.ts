@@ -1,4 +1,4 @@
-import CompositionApi from '../../src'
+import CompositionApi, { Module } from '../../src'
 import { createLocalVue } from '@vue/test-utils'
 import { mapActions } from '../../src/module'
 
@@ -7,7 +7,7 @@ localVue.use(CompositionApi)
 
 describe('Module', () => {
   it('can be subscribed to', () => {
-    const Main = new CompositionApi.Module({
+    const Main = new Module({
       name: 'main',
       setup({ mutation, state }) {
         const data = state({})

@@ -1,4 +1,4 @@
-import CompositionApi from '../../src'
+import CompositionApi, { Module, Store, plugin } from '../../src'
 import { createLocalVue } from '@vue/test-utils'
 
 const localVue = createLocalVue()
@@ -8,7 +8,7 @@ localVue.use(CompositionApi)
 describe('CompositionApi.plugin', () => {
   it('registers modules', () => {
     const test = 'null'
-    const Main = new CompositionApi.Module({
+    const Main = new Module({
       name: 'main',
       namespaced: true,
       setup({ state }) {
@@ -19,15 +19,15 @@ describe('CompositionApi.plugin', () => {
         }
       },
     })
-    const store = new CompositionApi.Store({
-      plugins: [CompositionApi.plugin([Main])],
+    const store = new Store({
+      plugins: [plugin([Main])],
     })
 
     expect(store.state.main.data).toStrictEqual(test)
   })
 
   it('commits mutations inside Vuex', () => {
-    const Main = new CompositionApi.Module({
+    const Main = new Module({
       name: 'main',
       setup({ state, mutation }) {
         const data = state(0)
@@ -45,8 +45,8 @@ describe('CompositionApi.plugin', () => {
       },
     })
 
-    const store = new CompositionApi.Store({
-      plugins: [CompositionApi.plugin([Main])],
+    const store = new Store({
+      plugins: [plugin([Main])],
     })
 
     Main.mutations.BUMP_DATA()
@@ -56,7 +56,7 @@ describe('CompositionApi.plugin', () => {
   })
 
   it('commits namespaced mutations inside Vuex', () => {
-    const Main = new CompositionApi.Module({
+    const Main = new Module({
       name: 'main',
       namespaced: true,
       setup({ state, mutation }) {
@@ -75,8 +75,8 @@ describe('CompositionApi.plugin', () => {
       },
     })
 
-    const store = new CompositionApi.Store({
-      plugins: [CompositionApi.plugin([Main])],
+    const store = new Store({
+      plugins: [plugin([Main])],
     })
 
     Main.mutations.BUMP_DATA()
@@ -86,7 +86,7 @@ describe('CompositionApi.plugin', () => {
   })
 
   it('commits mutations from Vuex', () => {
-    const Main = new CompositionApi.Module({
+    const Main = new Module({
       name: 'main',
       setup({ state, mutation }) {
         const data = state(0)
@@ -104,8 +104,8 @@ describe('CompositionApi.plugin', () => {
       },
     })
 
-    const store = new CompositionApi.Store({
-      plugins: [CompositionApi.plugin([Main])],
+    const store = new Store({
+      plugins: [plugin([Main])],
     })
 
     store.commit('BUMP_DATA')
@@ -115,7 +115,7 @@ describe('CompositionApi.plugin', () => {
   })
 
   it('commits namespaced mutations from Vuex', () => {
-    const Main = new CompositionApi.Module({
+    const Main = new Module({
       name: 'main',
       namespaced: true,
       setup({ state, mutation }) {
@@ -134,8 +134,8 @@ describe('CompositionApi.plugin', () => {
       },
     })
 
-    const store = new CompositionApi.Store({
-      plugins: [CompositionApi.plugin([Main])],
+    const store = new Store({
+      plugins: [plugin([Main])],
     })
 
     store.commit('main/BUMP_DATA')
@@ -145,7 +145,7 @@ describe('CompositionApi.plugin', () => {
   })
 
   it('dispatches actions from Vuex', () => {
-    const Main = new CompositionApi.Module({
+    const Main = new Module({
       name: 'main',
       setup({ state, mutation }) {
         const data = state(0)
@@ -172,8 +172,8 @@ describe('CompositionApi.plugin', () => {
       },
     })
 
-    const store = new CompositionApi.Store({
-      plugins: [CompositionApi.plugin([Main])],
+    const store = new Store({
+      plugins: [plugin([Main])],
     })
 
     const test = 6
@@ -184,7 +184,7 @@ describe('CompositionApi.plugin', () => {
   })
 
   it('dispatches namespaced actions from Vuex', () => {
-    const Main = new CompositionApi.Module({
+    const Main = new Module({
       name: 'main',
       namespaced: true,
       setup({ state, mutation }) {
@@ -212,8 +212,8 @@ describe('CompositionApi.plugin', () => {
       },
     })
 
-    const store = new CompositionApi.Store({
-      plugins: [CompositionApi.plugin([Main])],
+    const store = new Store({
+      plugins: [plugin([Main])],
     })
 
     const test = 6
