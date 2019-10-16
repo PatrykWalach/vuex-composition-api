@@ -229,31 +229,28 @@ describe('CompositionApi.plugin', () => {
       namespaced: true,
       setup: () => ({
         modules: {
-          sub: {
-            name: 'sub',
-            setup({ state, mutation }) {
-              const data = state(0)
+          sub: ({ state, mutation }) => {
+            const data = state(0)
 
-              const BUMP_DATA = mutation('BUMP_DATA', { data }, state => {
-                state.data += 1
-              })
+            const BUMP_DATA = mutation('BUMP_DATA', { data }, state => {
+              state.data += 1
+            })
 
-              return {
-                actions: {
-                  bumpDataBy: (n: number) => {
-                    for (let i = 0; i < n; i++) {
-                      BUMP_DATA()
-                    }
-                  },
+            return {
+              actions: {
+                bumpDataBy: (n: number) => {
+                  for (let i = 0; i < n; i++) {
+                    BUMP_DATA()
+                  }
                 },
-                mutations: {
-                  BUMP_DATA,
-                },
-                state: {
-                  data,
-                },
-              }
-            },
+              },
+              mutations: {
+                BUMP_DATA,
+              },
+              state: {
+                data,
+              },
+            }
           },
         },
       }),
@@ -278,7 +275,6 @@ describe('CompositionApi.plugin', () => {
       setup: () => ({
         modules: {
           sub: {
-            name: 'sub',
             namespaced: true,
             setup({ state, mutation }) {
               const data = state(0)
@@ -325,31 +321,28 @@ describe('CompositionApi.plugin', () => {
       name: 'main',
       setup: () => ({
         modules: {
-          sub: {
-            name: 'sub',
-            setup({ state, mutation }) {
-              const data = state(0)
+          sub: ({ state, mutation }) => {
+            const data = state(0)
 
-              const BUMP_DATA = mutation('BUMP_DATA', { data }, state => {
-                state.data += 1
-              })
+            const BUMP_DATA = mutation('BUMP_DATA', { data }, state => {
+              state.data += 1
+            })
 
-              return {
-                actions: {
-                  bumpDataBy: (n: number) => {
-                    for (let i = 0; i < n; i++) {
-                      BUMP_DATA()
-                    }
-                  },
+            return {
+              actions: {
+                bumpDataBy: (n: number) => {
+                  for (let i = 0; i < n; i++) {
+                    BUMP_DATA()
+                  }
                 },
-                mutations: {
-                  BUMP_DATA,
-                },
-                state: {
-                  data,
-                },
-              }
-            },
+              },
+              mutations: {
+                BUMP_DATA,
+              },
+              state: {
+                data,
+              },
+            }
           },
         },
       }),
@@ -373,7 +366,6 @@ describe('CompositionApi.plugin', () => {
       setup: () => ({
         modules: {
           sub: {
-            name: 'sub',
             namespaced: true,
             setup({ state, mutation }) {
               const data = state(0)

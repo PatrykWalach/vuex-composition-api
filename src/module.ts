@@ -97,7 +97,7 @@ export class Module<R extends SetupReturnType = any> {
     const _modules = (Object.fromEntries(
       Object.entries(modules || {}).map(([key, options]) => {
         if (options instanceof Function) {
-          return [key, new Module(options)]
+          return [key, new Module({ name: key, parent: this, setup: options })]
         }
 
         return [key, new Module({ ...options, name: key, parent: this })]
