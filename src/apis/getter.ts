@@ -10,7 +10,14 @@ export const getter = <T>(_getter: () => T): Getter<T> => {
 
   return new Proxy(value, {
     get: (obj, prop) => {
-      if (prop === '_getter') return _getter
+      if (prop === '_getter') {
+        return _getter
+      }
+
+      assert(
+        prop === 'value',
+        `prop ${String(prop)} doesn't exist on type Getter`,
+      )
 
       return obj.value
     },

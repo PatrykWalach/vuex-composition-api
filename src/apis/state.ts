@@ -8,10 +8,17 @@ export const state = <T>(value: T): State<T> => {
 
   return new Proxy(_value, {
     get: (obj, prop) => {
-      if (prop === '_replace')
+      if (prop === '_replace') {
         return (newValue: T) => {
           _value.value = newValue
         }
+      }
+
+      assert(
+        prop === 'value',
+        `prop ${String(prop)} doesn't exist on type State`,
+      )
+
       return obj.value
     },
     set: () => {
