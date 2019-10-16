@@ -1,4 +1,3 @@
-import './vue.d.ts'
 import { install } from './install'
 
 export * from './apis/getter'
