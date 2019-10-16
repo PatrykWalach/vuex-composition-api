@@ -1,5 +1,6 @@
 import { Module } from '../module'
 import { State } from './state'
+import { assert } from '../utils'
 
 export type inferState<S extends Record<string, State<any>> | undefined> = {
   [K in keyof S]: S[K] extends State<infer T> ? T : unknown
@@ -54,11 +55,17 @@ export const mutation: Mutation = <S extends Record<string, State<any>>, O>(
   state: S,
   fn: (state: inferState<S>, payload?: O) => void,
 ) => {
+  assert(
+    !module._mutations.hasOwnProperty(name),
+    'mutation names have to be unique',
+  )
+
   module._mutations[name] = fn
 
   return (payload?: O) => {
     if (module._store) {
-      const type = (module.options.namespaced ? module.name + '/' : '') + name
+      const type = module.name.length ? [...module.name, name].join('/') : name
+
       module._store({ payload, type }, state)
     } else {
       fn(mutable(state), payload)

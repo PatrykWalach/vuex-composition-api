@@ -222,4 +222,196 @@ describe('CompositionApi.plugin', () => {
     expect(Main.state.data.value).toStrictEqual(test)
     expect(store.state.main.data).toStrictEqual(test)
   })
+
+  it(`dispatches namespaced module's submodule actions from  from Vuex`, () => {
+    const Main = new Module({
+      name: 'main',
+      namespaced: true,
+      setup: () => ({
+        modules: {
+          sub: {
+            name: 'sub',
+            setup({ state, mutation }) {
+              const data = state(0)
+
+              const BUMP_DATA = mutation('BUMP_DATA', { data }, state => {
+                state.data += 1
+              })
+
+              return {
+                actions: {
+                  bumpDataBy: (n: number) => {
+                    for (let i = 0; i < n; i++) {
+                      BUMP_DATA()
+                    }
+                  },
+                },
+                mutations: {
+                  BUMP_DATA,
+                },
+                state: {
+                  data,
+                },
+              }
+            },
+          },
+        },
+      }),
+    })
+
+    const store = new Store({
+      plugins: [plugin([Main])],
+    })
+
+    const test = 6
+    store.dispatch('main/bumpDataBy', test)
+
+    expect(Main.modules.sub.state.data.value).toStrictEqual(test)
+
+    expect(store.state.main.sub.data).toStrictEqual(test)
+  })
+
+  it(`dispatches namespaced module's namespaced submodule actions from  from Vuex`, () => {
+    const Main = new Module({
+      name: 'main',
+      namespaced: true,
+      setup: () => ({
+        modules: {
+          sub: {
+            name: 'sub',
+            namespaced: true,
+            setup({ state, mutation }) {
+              const data = state(0)
+
+              const BUMP_DATA = mutation('BUMP_DATA', { data }, state => {
+                state.data += 1
+              })
+
+              return {
+                actions: {
+                  bumpDataBy: (n: number) => {
+                    for (let i = 0; i < n; i++) {
+                      BUMP_DATA()
+                    }
+                  },
+                },
+                mutations: {
+                  BUMP_DATA,
+                },
+                state: {
+                  data,
+                },
+              }
+            },
+          },
+        },
+      }),
+    })
+
+    const store = new Store({
+      plugins: [plugin([Main])],
+    })
+
+    const test = 6
+    store.dispatch('main/sub/bumpDataBy', test)
+
+    expect(Main.modules.sub.state.data.value).toStrictEqual(test)
+
+    expect(store.state.main.sub.data).toStrictEqual(test)
+  })
+
+  it(`dispatches module's submodule actions from  from Vuex`, () => {
+    const Main = new Module({
+      name: 'main',
+      setup: () => ({
+        modules: {
+          sub: {
+            name: 'sub',
+            setup({ state, mutation }) {
+              const data = state(0)
+
+              const BUMP_DATA = mutation('BUMP_DATA', { data }, state => {
+                state.data += 1
+              })
+
+              return {
+                actions: {
+                  bumpDataBy: (n: number) => {
+                    for (let i = 0; i < n; i++) {
+                      BUMP_DATA()
+                    }
+                  },
+                },
+                mutations: {
+                  BUMP_DATA,
+                },
+                state: {
+                  data,
+                },
+              }
+            },
+          },
+        },
+      }),
+    })
+
+    const store = new Store({
+      plugins: [plugin([Main])],
+    })
+
+    const test = 6
+    store.dispatch('bumpDataBy', test)
+
+    expect(Main.modules.sub.state.data.value).toStrictEqual(test)
+
+    expect(store.state.main.sub.data).toStrictEqual(test)
+  })
+
+  it(`dispatches module's namespaced submodule actions from  from Vuex`, () => {
+    const Main = new Module({
+      name: 'main',
+      setup: () => ({
+        modules: {
+          sub: {
+            name: 'sub',
+            namespaced: true,
+            setup({ state, mutation }) {
+              const data = state(0)
+
+              const BUMP_DATA = mutation('BUMP_DATA', { data }, state => {
+                state.data += 1
+              })
+
+              return {
+                actions: {
+                  bumpDataBy: (n: number) => {
+                    for (let i = 0; i < n; i++) {
+                      BUMP_DATA()
+                    }
+                  },
+                },
+                mutations: {
+                  BUMP_DATA,
+                },
+                state: {
+                  data,
+                },
+              }
+            },
+          },
+        },
+      }),
+    })
+
+    const store = new Store({
+      plugins: [plugin([Main])],
+    })
+
+    const test = 6
+    store.dispatch('sub/bumpDataBy', test)
+
+    expect(Main.modules.sub.state.data.value).toStrictEqual(test)
+
+    expect(store.state.main.sub.data).toStrictEqual(test)
+  })
 })

@@ -3,37 +3,37 @@ import { Store } from 'vuex'
 import { assert } from './utils'
 import { mutable } from './apis/mutation'
 
-export const plugin = (modules: Module[]) => (store: Store<any>) =>
+const registerModules = (store: Store<any>, modules: Module[]) =>
   modules.forEach(
-    ({ name, state, rawModule, registerStore, _mutations, options }) => {
+    ({ _name, name, state, rawModule, registerStore, _mutations, modules }) => {
       assert(
-        name !== null,
-        'provide names for all modules used inside the plugin',
+        !!_name.length,
+        'provide names for all root modules used inside the plugin',
       )
 
-      store.registerModule(name || '', rawModule)
+      store.registerModule(_name, rawModule)
 
       store.subscribe(({ type, payload }) => {
-        let mutationName = ''
-        if (options.namespaced) {
-          const splitName = type.split('/')
+        const splitName = type.split('/')
 
-          if (splitName.length === 2) {
-            const [moduleName, _mutationName] = splitName
-            if (moduleName === name) {
-              mutationName = _mutationName
-            }
+        const mutationName = splitName.pop()
+
+        if (mutationName && splitName.join('/') === name.join('/')) {
+          if (_mutations.hasOwnProperty(mutationName)) {
+            _mutations[mutationName](mutable(state), payload)
           }
-        } else {
-          mutationName = type
-        }
-        if (mutationName && _mutations.hasOwnProperty(mutationName)) {
-          _mutations[mutationName](mutable(state), payload)
         }
       })
 
       registerStore(({ type, payload }) => {
         store.commit(type, payload)
       })
+
+      if (Object.values(modules).length) {
+        registerModules(store, Object.values(modules))
+      }
     },
   )
+
+export const plugin = (modules: Module[]) => (store: Store<any>) =>
+  registerModules(store, modules)
