@@ -1,9 +1,9 @@
-import { Module } from './module'
+import { RawModule } from './module'
 import { Store } from 'vuex'
 import { assert } from './utils'
 import { mutable } from './apis/mutation'
 
-const registerModules = (store: Store<any>, modules: Module[]) =>
+const registerModules = (store: Store<any>, modules: RawModule[]) =>
   modules.forEach(
     ({ _name, name, state, rawModule, registerStore, _mutations, modules }) => {
       assert(
@@ -35,5 +35,5 @@ const registerModules = (store: Store<any>, modules: Module[]) =>
     },
   )
 
-export const plugin = (modules: Module[]) => (store: Store<any>) =>
+export const plugin = (modules: RawModule[]) => (store: Store<any>) =>
   registerModules(store, modules)

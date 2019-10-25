@@ -1,4 +1,9 @@
-import CompositionApi, { Module, mutable, mutation, state } from '../../src'
+import CompositionApi, {
+  createModule,
+  mutable,
+  mutation,
+  state,
+} from '../../src'
 import { createLocalVue } from '@vue/test-utils'
 
 const localVue = createLocalVue()
@@ -17,7 +22,7 @@ describe('mutable()', () => {
 
 describe('mutation()', () => {
   it('can be used outside the module', () => {
-    const Main = new Module({
+    const Main = createModule({
       name: 'main',
       setup({ state }) {
         const data = state({})
@@ -37,6 +42,6 @@ describe('mutation()', () => {
 
     CHANGE_DATA()
 
-    expect(Main.state.data.value).toStrictEqual(test)
+    expect(Main.data.value).toStrictEqual(test)
   })
 })

@@ -1,4 +1,4 @@
-import CompositionApi, { Module, Store } from '../../src'
+import CompositionApi, { Store, createModule } from '../../src'
 import Vue from 'vue'
 import { createLocalVue } from '@vue/test-utils'
 
@@ -8,7 +8,7 @@ localVue.use(CompositionApi)
 describe('CompositionApi.install()', () => {
   // it('injects modules', () => {
   //   const modules = {
-  //     a: new Module({
+  //     a: createModule({
   //       name: 'a',
   //       setup() {
   //         return {}

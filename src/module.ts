@@ -37,24 +37,22 @@ export type ModuleOptions<R> = {
   setup: Setup<R>
   name?: string | string[]
   namespaced?: boolean
-  parent?: Module
+  parent?: RawModule
 }
 
 export type inferModules<R> = {
-  [K in keyof R]: R[K] extends ModuleOptions<infer O>
-    ? Module<O>
-    : R[K] extends Setup<infer P>
-    ? Module<P>
+  [K in keyof R]: R[K] extends ModuleOptions<infer O> | Setup<infer O>
+    ? RawModule<O>
     : any
 }
 
-export class Module<R extends SetupReturnType = any> {
+export class RawModule<R extends SetupReturnType = any> {
   _name: string[]
   private _setup: Omit<R, 'modules'>
   private _modules: inferModules<R['modules']>
   options: { namespaced?: boolean } = {}
   _subscribers: Subscriber[] = []
-  private _parent: Module<any> | null
+  private _parent: RawModule<any> | null
   _store: Subscriber | null = null
   _mutations: Record<string, (state: inferState<any>, payload: any) => any> = {}
 
@@ -97,10 +95,13 @@ export class Module<R extends SetupReturnType = any> {
     const _modules = (Object.fromEntries(
       Object.entries(modules || {}).map(([key, options]) => {
         if (options instanceof Function) {
-          return [key, new Module({ name: key, parent: this, setup: options })]
+          return [
+            key,
+            createModule({ name: key, parent: this, setup: options }),
+          ]
         }
 
-        return [key, new Module({ ...options, name: key, parent: this })]
+        return [key, createModule({ ...options, name: key, parent: this })]
       }),
     ) as unknown) as inferModules<R['modules']>
 
@@ -186,16 +187,37 @@ export class Module<R extends SetupReturnType = any> {
   }
 }
 
-// export const mapModules = <M extends Record<string, Module<any>>>(
-//   modules: M,
-// ): {
-//   [K in keyof M]: M[K] extends Module<infer R>
-//     ? VuexModule<inferState<R['state']>, any>
-//     : VuexModule<any, any>
-// } =>
-//   Object.fromEntries(
-//     Object.entries(modules).map(([key, module]) => [key, module.rawModule]),
-//   ) as any
+export type Module<R extends SetupReturnType> = R['state'] &
+  R['getters'] &
+  R['mutations'] &
+  R['actions'] &
+  inferModules<R['modules']> &
+  RawModule<R>
+
+export const createModule = <R extends SetupReturnType>(
+  moduleOptions: ModuleOptions<R> | Setup<R>,
+) => {
+  const module = new RawModule(moduleOptions)
+
+  return new Proxy(
+    {
+      ...module.state,
+      ...module.getters,
+      ...module.mutations,
+      ...module.actions,
+      ...module.modules,
+      ...module,
+    },
+    {
+      get: (object, key: keyof typeof module) => {
+        if (object.hasOwnProperty(key)) {
+          return object[key]
+        }
+        return module[key]
+      },
+    },
+  )
+}
 
 export const mapState = <S extends Record<string, State<any>>>(
   state: S,

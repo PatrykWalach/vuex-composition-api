@@ -1,4 +1,4 @@
-import CompositionApi, { Module } from '../../src'
+import CompositionApi, { createModule } from '../../src'
 import { createLocalVue } from '@vue/test-utils'
 import { mapActions } from '../../src/module'
 
@@ -7,7 +7,7 @@ localVue.use(CompositionApi)
 
 describe('Module', () => {
   it('can be subscribed to', () => {
-    const Main = new Module({
+    const Main = createModule({
       name: 'main',
       setup({ mutation, state }) {
         const data = state({})
@@ -40,12 +40,12 @@ describe('Module', () => {
       expect(payload).toStrictEqual(test)
     })
 
-    Main.mutations.CHANGE_DATA(test)
+    Main.CHANGE_DATA(test)
     expect(called).toStrictEqual(1)
   })
 
   it('can take just a setup function', () => {
-    const Main = new Module(({ mutation, state }) => {
+    const Main = createModule(({ mutation, state }) => {
       const data = state({})
 
       const CHANGE_DATA = mutation(
@@ -75,7 +75,7 @@ describe('Module', () => {
       expect(payload).toStrictEqual(test)
     })
 
-    Main.mutations.CHANGE_DATA(test)
+    Main.CHANGE_DATA(test)
     expect(called).toStrictEqual(1)
   })
 })

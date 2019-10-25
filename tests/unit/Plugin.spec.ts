@@ -1,4 +1,4 @@
-import CompositionApi, { Module, Store, plugin } from '../../src'
+import CompositionApi, { Store, createModule, plugin } from '../../src'
 import { createLocalVue } from '@vue/test-utils'
 
 const localVue = createLocalVue()
@@ -8,7 +8,7 @@ localVue.use(CompositionApi)
 describe('CompositionApi.plugin', () => {
   it('registers modules', () => {
     const test = 'null'
-    const Main = new Module({
+    const Main = createModule({
       name: 'main',
       namespaced: true,
       setup({ state }) {
@@ -27,7 +27,7 @@ describe('CompositionApi.plugin', () => {
   })
 
   it('commits mutations inside Vuex', () => {
-    const Main = new Module({
+    const Main = createModule({
       name: 'main',
       setup({ state, mutation }) {
         const data = state(0)
@@ -49,14 +49,14 @@ describe('CompositionApi.plugin', () => {
       plugins: [plugin([Main])],
     })
 
-    Main.mutations.BUMP_DATA()
+    Main.BUMP_DATA()
 
-    expect(Main.state.data.value).toStrictEqual(1)
+    expect(Main.data.value).toStrictEqual(1)
     expect(store.state.main.data).toStrictEqual(1)
   })
 
   it('commits namespaced mutations inside Vuex', () => {
-    const Main = new Module({
+    const Main = createModule({
       name: 'main',
       namespaced: true,
       setup({ state, mutation }) {
@@ -79,14 +79,14 @@ describe('CompositionApi.plugin', () => {
       plugins: [plugin([Main])],
     })
 
-    Main.mutations.BUMP_DATA()
+    Main.BUMP_DATA()
 
-    expect(Main.state.data.value).toStrictEqual(1)
+    expect(Main.data.value).toStrictEqual(1)
     expect(store.state.main.data).toStrictEqual(1)
   })
 
   it('commits mutations from Vuex', () => {
-    const Main = new Module({
+    const Main = createModule({
       name: 'main',
       setup({ state, mutation }) {
         const data = state(0)
@@ -110,12 +110,12 @@ describe('CompositionApi.plugin', () => {
 
     store.commit('BUMP_DATA')
 
-    expect(Main.state.data.value).toStrictEqual(1)
+    expect(Main.data.value).toStrictEqual(1)
     expect(store.state.main.data).toStrictEqual(1)
   })
 
   it('commits namespaced mutations from Vuex', () => {
-    const Main = new Module({
+    const Main = createModule({
       name: 'main',
       namespaced: true,
       setup({ state, mutation }) {
@@ -140,12 +140,12 @@ describe('CompositionApi.plugin', () => {
 
     store.commit('main/BUMP_DATA')
 
-    expect(Main.state.data.value).toStrictEqual(1)
+    expect(Main.data.value).toStrictEqual(1)
     expect(store.state.main.data).toStrictEqual(1)
   })
 
   it('dispatches actions from Vuex', () => {
-    const Main = new Module({
+    const Main = createModule({
       name: 'main',
       setup({ state, mutation }) {
         const data = state(0)
@@ -179,12 +179,12 @@ describe('CompositionApi.plugin', () => {
     const test = 6
     store.dispatch('bumpDataBy', test)
 
-    expect(Main.state.data.value).toStrictEqual(test)
+    expect(Main.data.value).toStrictEqual(test)
     expect(store.state.main.data).toStrictEqual(test)
   })
 
   it('dispatches namespaced actions from Vuex', () => {
-    const Main = new Module({
+    const Main = createModule({
       name: 'main',
       namespaced: true,
       setup({ state, mutation }) {
@@ -219,12 +219,12 @@ describe('CompositionApi.plugin', () => {
     const test = 6
     store.dispatch('main/bumpDataBy', test)
 
-    expect(Main.state.data.value).toStrictEqual(test)
+    expect(Main.data.value).toStrictEqual(test)
     expect(store.state.main.data).toStrictEqual(test)
   })
 
   it(`dispatches namespaced module's submodule actions from  from Vuex`, () => {
-    const Main = new Module({
+    const Main = createModule({
       name: 'main',
       namespaced: true,
       setup: () => ({
@@ -269,7 +269,7 @@ describe('CompositionApi.plugin', () => {
   })
 
   it(`dispatches namespaced module's namespaced submodule actions from  from Vuex`, () => {
-    const Main = new Module({
+    const Main = createModule({
       name: 'main',
       namespaced: true,
       setup: () => ({
@@ -317,7 +317,7 @@ describe('CompositionApi.plugin', () => {
   })
 
   it(`dispatches module's submodule actions from  from Vuex`, () => {
-    const Main = new Module({
+    const Main = createModule({
       name: 'main',
       setup: () => ({
         modules: {
@@ -361,7 +361,7 @@ describe('CompositionApi.plugin', () => {
   })
 
   it(`dispatches module's namespaced submodule actions from  from Vuex`, () => {
-    const Main = new Module({
+    const Main = createModule({
       name: 'main',
       setup: () => ({
         modules: {
