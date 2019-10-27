@@ -47,14 +47,14 @@ export type inferModules<R> = {
 }
 
 export class RawModule<R extends SetupReturnType = any> {
-  _name: string[]
-  private _setup: Omit<R, 'modules'>
   private _modules: inferModules<R['modules']>
-  options: { namespaced?: boolean } = {}
-  _subscribers: Subscriber[] = []
+  private _options: { namespaced?: boolean } = {}
   private _parent: RawModule<any> | null
-  _store: Subscriber | null = null
+  private _setup: Omit<R, 'modules'>
   _mutations: Record<string, (state: inferState<any>, payload: any) => any> = {}
+  _name: string[]
+  _store: Subscriber | null = null
+  _subscribers: Subscriber[] = []
 
   constructor(options: ModuleOptions<R> | Setup<R>) {
     const { name = [], namespaced = false, parent = null } =
@@ -62,7 +62,7 @@ export class RawModule<R extends SetupReturnType = any> {
 
     assert(!namespaced || !!name, 'provide name for namespaced modules')
 
-    this.options = { namespaced }
+    this._options = { namespaced }
 
     this._name = [
       ...((parent && parent._name) || []),
@@ -110,11 +110,11 @@ export class RawModule<R extends SetupReturnType = any> {
   }
 
   get name(): string[] {
-    const { _name, options, _parent } = this
+    const { _name, _options, _parent } = this
 
     return [
       ...((_parent && _parent.name) || []),
-      ...(options.namespaced ? _name.slice().splice(-1) : []),
+      ...(_options.namespaced ? _name.slice().splice(-1) : []),
     ]
   }
 
@@ -154,8 +154,7 @@ export class RawModule<R extends SetupReturnType = any> {
       _mutations,
       actions: _actions,
       _setup,
-      options,
-      // modules: _modules,
+      _options,
     } = this
 
     const { state: _state } = _setup
@@ -170,11 +169,7 @@ export class RawModule<R extends SetupReturnType = any> {
     const actions =
       _actions && mapActions(_actions as NonNullable<R['actions']>)
 
-    // const modules =
-    //   _modules &&
-    //   mapModules(_modules as NonNullable<inferModules<R['modules']>>)
-
-    const { namespaced } = options
+    const { namespaced } = _options
 
     return {
       actions,
@@ -182,7 +177,6 @@ export class RawModule<R extends SetupReturnType = any> {
       mutations,
       namespaced,
       state,
-      // modules,
     }
   }
 }
