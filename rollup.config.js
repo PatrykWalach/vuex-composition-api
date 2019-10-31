@@ -8,7 +8,7 @@ export default {
     ...Object.keys(pkg.dependencies || {}),
     ...Object.keys(pkg.peerDependencies || {}),
   ],
-  input: 'src/index.ts',
+  input: './src/index.ts',
   output: [
     {
       file: pkg.main,
