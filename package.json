@@ -1,6 +1,6 @@
 {
   "name": "vuex-composition-api",
-  "version": "2.0.0-beta.0",
+  "version": "2.0.0",
   "description": "Make Vuex modules with syntax inspired by @vue/composition-api",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
@@ -34,30 +34,35 @@
     "url": "https://github.com/PatrykWalach/vuex-composition-api/issues"
   },
   "homepage": "https://github.com/PatrykWalach/vuex-composition-api#readme",
-  "dependencies": {
+  "peerDependencies": {
     "@vue/composition-api": "^0.3.2",
-    "core-js": "^3.3.4",
-    "vue": "^2.6.10",
+    "core-js": "^3.3.5",
+    "vue": "^2.6.10"
+  },
+  "dependencies": {
     "vuex": "^3.1.1"
   },
   "devDependencies": {
-    "@types/jest": "^24.0.19",
-    "@types/node": "^12.11.7",
-    "@typescript-eslint/eslint-plugin": "^2.5.0",
-    "@typescript-eslint/parser": "^2.5.0",
+    "@types/jest": "^24.0.21",
+    "@types/node": "^12.12.3",
+    "@typescript-eslint/eslint-plugin": "^2.6.0",
+    "@typescript-eslint/parser": "^2.6.0",
+    "@vue/composition-api": "^0.3.2",
     "@vue/test-utils": "^1.0.0-beta.29",
-    "eslint": "^6.5.1",
-    "eslint-config-prettier": "^6.4.0",
+    "core-js": "^3.3.5",
+    "eslint": "^6.6.0",
+    "eslint-config-prettier": "^6.5.0",
     "eslint-plugin-prettier": "^3.1.1",
     "jest": "^24.9.0",
     "prettier": "^1.18.2",
-    "rollup": "^1.25.2",
+    "rollup": "^1.26.0",
     "rollup-plugin-commonjs": "^10.1.0",
     "rollup-plugin-node-resolve": "^5.2.0",
     "rollup-plugin-terser": "^5.1.2",
     "rollup-plugin-typescript2": "^0.24.3",
     "ts-jest": "^24.1.0",
     "typescript": "^3.6.4",
+    "vue": "^2.6.10",
     "vue-template-compiler": "^2.6.10"
   }
 }
