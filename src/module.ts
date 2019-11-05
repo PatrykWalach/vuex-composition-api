@@ -42,7 +42,7 @@ export type ModuleOptions<R> = {
 
 export type inferModules<R> = {
   [K in keyof R]: R[K] extends ModuleOptions<infer O> | Setup<infer O>
-    ? RawModule<O>
+    ? Module<O>
     : any
 }
 
@@ -80,9 +80,9 @@ export class RawModule<R extends SetupReturnType = any> {
       name: string,
       state: S,
       fn: (state: inferState<S>, payload?: O) => void,
-    ): ((payload?: O) => void) => {
-      return _mutation(module, name, state, fn)
-    }
+    ): ((payload?: O) => void) =>
+       _mutation(module, name, state, fn)
+
 
     const { modules, ...content } = (options instanceof Function
       ? options
