@@ -40,11 +40,11 @@
     "vue": "^2.6.10"
   },
   "dependencies": {
-    "vuex": "^3.1.1"
+    "vuex": "^3.1.2"
   },
   "devDependencies": {
     "@types/jest": "^24.0.22",
-    "@types/node": "^12.12.6",
+    "@types/node": "^12.12.7",
     "@typescript-eslint/eslint-plugin": "^2.6.1",
     "@typescript-eslint/parser": "^2.6.1",
     "@vue/composition-api": "^0.3.2",
@@ -54,8 +54,8 @@
     "eslint-config-prettier": "^6.5.0",
     "eslint-plugin-prettier": "^3.1.1",
     "jest": "^24.9.0",
-    "prettier": "^1.18.2",
-    "rollup": "^1.26.3",
+    "prettier": "^1.19.1",
+    "rollup": "^1.26.5",
     "rollup-plugin-commonjs": "^10.1.0",
     "rollup-plugin-node-resolve": "^5.2.0",
     "rollup-plugin-terser": "^5.1.2",
