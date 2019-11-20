@@ -1,19 +1,14 @@
-import CompositionApi from '@vue/composition-api'
+import { InjectionKey, inject, provide } from '@vue/composition-api'
+import { Store } from 'vuex'
 import Vue from 'vue'
-import { install as installVuex } from 'vuex'
 
-export const install = (_Vue: typeof Vue) => {
-  CompositionApi.install(_Vue)
-  installVuex(_Vue)
+const key: InjectionKey<Store<any>> = Symbol('store')
+export const useStore = () => inject(key) as Store<any>
 
-  Vue.mixin({
-    beforeCreate: function() {
-      const options = this.$options
-      if (options.modules) {
-        this.$modules = options.modules
-      } else if (options.parent && options.parent.$modules) {
-        this.$modules = options.parent.$modules
-      }
+export const install = (app: typeof Vue, store: Store<any>) =>
+  app.mixin({
+    setup() {
+      provide(key, store)
+      return {}
     },
   })
-}
