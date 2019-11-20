@@ -1,90 +1,35 @@
-import CompositionApi, { createModule } from '../../src'
+import Vuex, { ActionContext } from 'vuex'
+import { action, createModule, mutation, state } from '../../src'
+import CompositionApi, { reactive } from '@vue/composition-api'
+import { createDirectStore } from 'direct-vuex'
 import { createLocalVue } from '@vue/test-utils'
-import { mapActions } from '../../src/module'
+import { ModuleOptions } from '../../src/module'
 
 const localVue = createLocalVue()
 localVue.use(CompositionApi)
+localVue.use(Vuex)
 
 describe('Module', () => {
-  it('can be subscribed to', () => {
-    const Main = createModule({
-      name: 'main',
-      setup({ mutation, state }) {
-        const data = state({})
+  it('returns module options', () => {
+    const x = { y: 'z' }
+    const test = createModule(
+      () => ({ namespaced: true, state: reactive(x) } as const),
+    )
 
-        const CHANGE_DATA = mutation(
-          'CHANGE_DATA',
-          { data },
-          (state, value: { y: string }) => {
-            state.data = value
+    const test2 = createModule(
+      () =>
+        ({
+          modules: {
+            test,
           },
-        )
+          namespaced: true,
+        } as const),
+    )
 
-        return {
-          mutations: {
-            CHANGE_DATA,
-          },
-          state: {
-            data,
-          },
-        }
-      },
-    })
+    const { store } = createDirectStore({
+      modules: { test2 },
+    } as const)
 
-    let called = 0
-    const test = { y: '1' }
-
-    Main.subscribe(({ type, payload }) => {
-      called += 1
-      expect(type).toStrictEqual('CHANGE_DATA')
-      expect(payload).toStrictEqual(test)
-    })
-
-    Main.CHANGE_DATA(test)
-    expect(called).toStrictEqual(1)
+    expect(store.state.test2.test).toStrictEqual(x)
   })
-
-  it('can take just a setup function', () => {
-    const Main = createModule(({ mutation, state }) => {
-      const data = state({})
-
-      const CHANGE_DATA = mutation(
-        'CHANGE_DATA',
-        { data },
-        (state, value: { y: string }) => {
-          state.data = value
-        },
-      )
-
-      return {
-        mutations: {
-          CHANGE_DATA,
-        },
-        state: {
-          data,
-        },
-      }
-    })
-
-    let called = 0
-    const test = { y: '1' }
-
-    Main.subscribe(({ type, payload }) => {
-      called += 1
-      expect(type).toStrictEqual('CHANGE_DATA')
-      expect(payload).toStrictEqual(test)
-    })
-
-    Main.CHANGE_DATA(test)
-    expect(called).toStrictEqual(1)
-  })
-})
-
-// describe('mapState', () => {})
-// describe('mapGetters', () => {})
-describe('mapActions', () => {
-  const action = (n: number) => n ** 2
-
-  const mapped = mapActions({ action })
-  expect(mapped.action({}, 2)).toStrictEqual(4)
 })

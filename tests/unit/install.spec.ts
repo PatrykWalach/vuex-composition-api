@@ -1,36 +1,33 @@
-import CompositionApi, { Store, createModule } from '../../src'
-import Vue from 'vue'
+import VuexCompositionApi, { useStore } from '../../src'
+import Vuex from 'vuex'
+import { createDirectStore } from 'direct-vuex'
 import { createLocalVue } from '@vue/test-utils'
 
-const localVue = createLocalVue()
-localVue.use(CompositionApi)
+describe('install()', () => {
+  it('can be installed', () => {
+    const localVue = createLocalVue()
+    localVue.use(Vuex)
+    const { store } = createDirectStore({} as const)
 
-describe('CompositionApi.install()', () => {
-  // it('injects modules', () => {
-  //   const modules = {
-  //     a: createModule({
-  //       name: 'a',
-  //       setup() {
-  //         return {}
-  //       },
-  //     }),
-  //   }
+    expect(() => {
+      localVue.use(VuexCompositionApi, store.original)
+    }).not.toThrow()
+  })
+})
 
-  //   expect(
-  //     new Vue({
-  //       modules,
-  //     }),
-  //   ).not.toThrow()
-  // })
+describe('useStore()', () => {
+  it('returns store', () => {
+    const localVue = createLocalVue()
+    localVue.use(Vuex)
+    const { store } = createDirectStore({} as const)
+    localVue.use(VuexCompositionApi, store.original)
 
-  it('injects store', () => {
-    const store = new Store({})
-
-    expect(
-      () =>
-        new Vue({
-          store,
-        }),
-    ).not.toThrow()
+    new localVue({
+      setup() {
+        const injectedStore = useStore()
+        expect(injectedStore).toStrictEqual(store.original)
+        return { injectedStore }
+      },
+    })
   })
 })

@@ -1,34 +1,67 @@
-import CompositionApi, { state } from '../../src'
+import CompositionApi, { reactive } from '@vue/composition-api'
+import { createModule, mutation } from '../../src'
+import Vuex from 'vuex'
+import { createDirectStore } from 'direct-vuex'
 import { createLocalVue } from '@vue/test-utils'
-import { isRef } from '@vue/composition-api'
 
 const localVue = createLocalVue()
 localVue.use(CompositionApi)
+localVue.use(Vuex)
 
 describe('state()', () => {
-  it('can be accessed by calling .value', () => {
-    const test = { y: 'z' }
-    const x = state(test)
-    expect(x.value).toStrictEqual(test)
+  it('provides typing without payload', () => {
+    const test = createModule(() => {
+      const state = reactive({ x: 0 })
+      return {
+        mutations: {
+          TEST_MUTATION: mutation(state, () => {}),
+        },
+      } as const
+    })
+
+    const { store } = createDirectStore({
+      modules: { test },
+    } as const)
+
+    expect(store.commit.TEST_MUTATION).not.toThrow()
   })
 
-  it('isRef', () => {
-    const x = state(null)
-    expect(isRef(x)).toStrictEqual(true)
+  it('provides typing for state', () => {
+    const test = createModule(() => {
+      const state = reactive({ x: 0 })
+      return {
+        mutations: {
+          TEST_MUTATION: mutation(state, state => {
+            state.x = 2
+          }),
+        },
+      } as const
+    })
+
+    const { store } = createDirectStore({
+      modules: { test },
+    } as const)
+
+    expect(store.commit.TEST_MUTATION).not.toThrow()
   })
 
-  it('can not be set', () => {
-    const x = state('')
-    expect(() => {
-      x.value = 'null'
-    }).toThrow()
-  })
+  it('provides typing with payload', () => {
+    const test = createModule(() => {
+      const state = reactive({ x: 0 })
 
-  it('can be replaced getter', () => {
-    const x = state('')
-    const test = 'null'
+      return {
+        mutations: {
+          TEST_MUTATION: mutation(state, (state, payload: number) => {
+            state.x += payload
+          }),
+        },
+      } as const
+    })
 
-    x._replace(test)
-    expect(x.value).toStrictEqual(test)
+    const { store } = createDirectStore({
+      modules: { test },
+    } as const)
+
+    expect(() => store.commit.TEST_MUTATION(2)).not.toThrow()
   })
 })

@@ -1,47 +1,53 @@
-import CompositionApi, {
-  createModule,
-  mutable,
-  mutation,
-  state,
-} from '../../src'
+import CompositionApi, { reactive } from '@vue/composition-api'
+import { createModule, mutation } from '../../src'
+import Vuex from 'vuex'
+import { createDirectStore } from 'direct-vuex'
 import { createLocalVue } from '@vue/test-utils'
 
 const localVue = createLocalVue()
 localVue.use(CompositionApi)
-
-describe('mutable()', () => {
-  it('makes state mutable', () => {
-    const x = state('')
-
-    const test = 'null'
-    mutable({ x }).x = test
-
-    expect(x.value).toStrictEqual(test)
-  })
-})
+localVue.use(Vuex)
 
 describe('mutation()', () => {
-  it('can be used outside the module', () => {
-    const Main = createModule({
-      name: 'main',
-      setup({ state }) {
-        const data = state({})
-        return {
-          state: {
-            data,
-          },
-        }
-      },
+  it('provides typing with payload', () => {
+    const test = createModule(() => {
+      const state = reactive({ x: 0 })
+
+      return {
+        mutations: {
+          TEST_MUTATION: mutation(state, (state, payload: number) => {
+            state.x += payload
+          }),
+        },
+      } as const
     })
 
-    const test = { y: '1' }
+    const { store } = createDirectStore({
+      modules: { test },
+    } as const)
 
-    const CHANGE_DATA = mutation(Main, 'CHANGE_DATA', Main.state, state => {
-      state.data = test
+    expect(() => store.commit.TEST_MUTATION(2)).not.toThrow()
+  })
+
+  it('commits once', () => {
+    const test = createModule(() => {
+      const state = reactive({ x: 0 })
+
+      return {
+        mutations: {
+          TEST_MUTATION: mutation(state, state => {
+            state.x++
+          }),
+        },
+        state,
+      } as const
     })
 
-    CHANGE_DATA()
+    const { store } = createDirectStore({
+      modules: { test },
+    } as const)
+    store.commit.TEST_MUTATION()
 
-    expect(Main.data.value).toStrictEqual(test)
+    expect(store.state.test.x).toStrictEqual(1)
   })
 })

@@ -1,9 +1,11 @@
-import CompositionApi, { getter } from '../../src'
+import CompositionApi, { isRef } from '@vue/composition-api'
+import Vuex from 'vuex'
 import { createLocalVue } from '@vue/test-utils'
-import { isRef } from '@vue/composition-api'
+import { getter } from '../../src'
 
 const localVue = createLocalVue()
 localVue.use(CompositionApi)
+localVue.use(Vuex)
 
 describe('getter()', () => {
   it('can be accessed by calling .value', () => {
@@ -17,18 +19,5 @@ describe('getter()', () => {
   it('isRef', () => {
     const x = getter(() => null)
     expect(isRef(x)).toStrictEqual(true)
-  })
-
-  it('can not be set', () => {
-    const x = getter(() => '')
-    expect(() => {
-      x.value = 'null'
-    }).toThrow()
-  })
-
-  it('stores getter', () => {
-    const _getter = () => ''
-    const x = getter(_getter)
-    expect(x._getter).toStrictEqual(_getter)
   })
 })
