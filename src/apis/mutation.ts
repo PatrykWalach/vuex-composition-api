@@ -1,18 +1,19 @@
-import { State } from './state'
+type RawMutation<S, P = any> = (state: S, payload: P) => S | void
 
-export type Mutation = {
-  <S extends Record<string, State<any>>>(
-    state: S,
-    fn: (state: S, payload: void) => any,
-  ): (state: S, payload: void) => any
+export type RawMutations<S> = NonNullable<
+  | Exclude<
+      {
+        [K in keyof Partial<S>]: RawMutations<S[K]>
+      },
+      S
+    >
+  | Record<string, RawMutation<S>>
+>
 
-  <S extends Record<string, State<any>>, O>(
-    state: S,
-    fn: (state: S, payload: O) => any,
-  ): (state: S, payload: O) => any
+type Mutation<P = any> = (payload: P) => void
+
+export type MapRawMutations<R> = {
+  [K in keyof R]: R[K] extends RawMutation<any, infer P>
+    ? Mutation<P>
+    : MapRawMutations<R[K]>
 }
-
-export const mutation: Mutation = <S extends State<any>, O>(
-  state: S,
-  fn: (state: S, payload?: O) => any,
-) => fn

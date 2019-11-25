@@ -1,11 +1,13 @@
 import { InjectionKey, inject, provide } from '@vue/composition-api'
-import { Store } from 'vuex'
+
 import Vue from 'vue'
+/* eslint-disable-next-line @typescript-eslint/no-empty-interface */
+export interface Hook {}
+const key: InjectionKey<Hook> = Symbol('store')
 
-const key: InjectionKey<Store<any>> = Symbol('store')
-export const useStore = () => inject(key) as Store<any>
+export const useStore = () => inject(key) as Hook
 
-export const install = (app: typeof Vue, store: Store<any>) =>
+export const install = (app: typeof Vue, store: Hook) =>
   app.mixin({
     setup() {
       provide(key, store)

@@ -1,9 +1,7 @@
-export * from './apis/getter'
 export * from './apis/state'
 export * from './apis/mutation'
-export * from './apis/action'
-export { useStore } from './install'
+export { useStore, Hook } from './install'
 import { install } from './install'
-export { createModule } from './module'
+export { createStore } from './store'
 const VuexCompositionApi = { install }
 export default VuexCompositionApi

@@ -1,67 +1,78 @@
-import CompositionApi, { reactive } from '@vue/composition-api'
-import { createModule, mutation } from '../../src'
-import Vuex from 'vuex'
-import { createDirectStore } from 'direct-vuex'
+import { concatState, state } from '../../src'
+import CompositionApi from '@vue/composition-api'
+
 import { createLocalVue } from '@vue/test-utils'
 
 const localVue = createLocalVue()
 localVue.use(CompositionApi)
-localVue.use(Vuex)
 
 describe('state()', () => {
-  it('provides typing without payload', () => {
-    const test = createModule(() => {
-      const state = reactive({ x: 0 })
-      return {
-        mutations: {
-          TEST_MUTATION: mutation(state, () => {}),
-        },
-      } as const
-    })
+  it('is mutable', () => {
+    const store = state(
+      { x: 0 },
+      {
+        INCREMENT_X: state => ({
+          x: state.x + 1,
+        }),
+      },
+    )
 
-    const { store } = createDirectStore({
-      modules: { test },
-    } as const)
+    store.commit.INCREMENT_X(undefined)
 
-    expect(store.commit.TEST_MUTATION).not.toThrow()
+    expect(store.state.x).toStrictEqual(1)
   })
 
-  it('provides typing for state', () => {
-    const test = createModule(() => {
-      const state = reactive({ x: 0 })
-      return {
-        mutations: {
-          TEST_MUTATION: mutation(state, state => {
-            state.x = 2
-          }),
-        },
-      } as const
+  it('deep is mutable', () => {
+    const store = state(
+      { x: 0 },
+      {
+        x: { INCREMENT: state => state + 1 },
+      },
+    )
+
+    store.commit.x.INCREMENT(undefined)
+
+    expect(store.state.x).toStrictEqual(1)
+  })
+})
+
+describe('concatState()', () => {
+  it('concats state', () => {
+    const x = state(
+      { value: 0 },
+      {
+        INCREMENT: ({ value }) => ({ value: value + 1 }),
+      },
+    )
+
+    const y = state(0, {
+      INCREMENT: state => ++state,
     })
 
-    const { store } = createDirectStore({
-      modules: { test },
-    } as const)
-
-    expect(store.commit.TEST_MUTATION).not.toThrow()
+    const store = concatState({ x, y })
+    store.commit.x.INCREMENT(undefined)
+    expect(store.state.x.value).toStrictEqual(1)
+    expect(store.state.y).toStrictEqual(0)
   })
 
-  it('provides typing with payload', () => {
-    const test = createModule(() => {
-      const state = reactive({ x: 0 })
-
-      return {
-        mutations: {
-          TEST_MUTATION: mutation(state, (state, payload: number) => {
-            state.x += payload
-          }),
-        },
-      } as const
+  it('syncs state', () => {
+    const x = state(0, {
+      INCREMENT: value => value + 1,
     })
 
-    const { store } = createDirectStore({
-      modules: { test },
-    } as const)
+    const store = concatState({ x })
+    expect(store.state.x).toStrictEqual(x.state)
+  })
+  it('syncs state', () => {
+    const x = state(
+      { value: 0 },
+      {
+        value: { INCREMENT: value => value + 1 },
+      },
+    )
 
-    expect(() => store.commit.TEST_MUTATION(2)).not.toThrow()
+    const store = concatState({ x })
+    store.commit.x.value.INCREMENT(undefined)
+    expect(store.state.x.value).toStrictEqual(x.state.value)
   })
 })
