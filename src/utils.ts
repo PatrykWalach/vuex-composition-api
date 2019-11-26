@@ -10,3 +10,8 @@ export const travel = <R = any>(object: any, keys: string[]): R => {
   }
   return object
 }
+export const assert = (condition: any, error: string) => {
+  if (!condition) {
+    throw new Error(`[vuex-composition-api] ${error}`)
+  }
+}
