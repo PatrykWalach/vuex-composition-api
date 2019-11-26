@@ -5,11 +5,8 @@ export const travel = <R = any>(object: any, keys: string[]): R => {
     if (!object.hasOwnProperty(key)) {
       object[key] = {}
     }
-    if (keys.length) {
-      return travel(object[key], keys)
-    } else {
-      return object[key]
-    }
+
+    return travel(object[key], keys)
   }
   return object
 }
