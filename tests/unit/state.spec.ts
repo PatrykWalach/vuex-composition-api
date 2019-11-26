@@ -1,4 +1,4 @@
-import { concatState, state } from '../../src'
+import { state } from '../../src'
 import CompositionApi from '@vue/composition-api'
 
 import { createLocalVue } from '@vue/test-utils'
@@ -69,19 +69,19 @@ describe('complex state()', () => {
     expect(store.state.x).toStrictEqual(1)
   })
 
-  // it('can be mutated in only one way', () => {
-  //   const store = state(
-  //     { x: 0 },
-  //     {
-  //       INCREMENT: state => {
-  //         state.value.x++
-  //         return state.value
-  //       },
-  //     },
-  //   )
+  it('can be mutated in only one way', () => {
+    const store = state(
+      { x: 0 },
+      {
+        INCREMENT: state => {
+          state.value.x++
+          return state.value
+        },
+      },
+    )
 
-  //   expect(() => store.commit.INCREMENT(undefined)).toThrow()
-  // })
+    expect(() => store.commit.INCREMENT(undefined)).toThrow()
+  })
 })
 
 describe('complex state() part', () => {
@@ -126,51 +126,4 @@ describe('complex state() part', () => {
 
     expect(() => store.commit.x.INCREMENT(undefined)).toThrow()
   })
-})
-
-describe('concatState()', () => {
-  it('concats state', () => {
-    const x = state(
-      { value: 0 },
-      {
-        INCREMENT: state => ({ value: state.value.value + 1 }),
-      },
-    )
-
-    const y = state(0, {
-      INCREMENT: state => state.value + 1,
-    })
-
-    const store = concatState({ x, y })
-    store.commit.x.INCREMENT(undefined)
-    expect(store.state.x.value).toStrictEqual(1)
-    expect(store.state.y).toStrictEqual(0)
-  })
-
-  // it('syncs simple state', () => {
-  //   const x = state(0, {
-  //     INCREMENT: value => value + 1,
-  //   })
-
-  //   const store = concatState({ x })
-  //   store.commit.x.INCREMENT(undefined)
-  //   expect(store.state.x).toStrictEqual(x.state)
-  //   x.commit.INCREMENT(undefined)
-  //   expect(store.state.x).toStrictEqual(x.state)
-  // })
-
-  // it('syncs state', () => {
-  //   const x = state(
-  //     { value: 0 },
-  //     {
-  //       value: { INCREMENT: value => value + 1 },
-  //     },
-  //   )
-
-  //   const store = concatState({ x })
-  //   store.commit.x.value.INCREMENT(undefined)
-  //   expect(store.state.x.value).toStrictEqual(x.state.value)
-  //   x.commit.value.INCREMENT(undefined)
-  //   expect(store.state.x.value).toStrictEqual(x.state.value)
-  // })
 })

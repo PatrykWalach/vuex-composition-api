@@ -1,7 +1,7 @@
 import 'core-js/features/object/from-entries'
 import { MapRawMutations, RawMutations } from './mutation'
 import { Ref, computed, ref } from '@vue/composition-api'
-import { travel } from '../utils'
+import { assert, travel } from '../utils'
 
 export class Reactive<T, M extends RawMutations<T> = RawMutations<T>> {
   public _state: Ref<T>
@@ -39,11 +39,8 @@ export class Reactive<T, M extends RawMutations<T> = RawMutations<T>> {
                 const value = mutation(proxy, payload)
 
                 if (value !== undefined) {
-                  if (set) {
-                    throw new Error(
-                      `if you mutate state remove return statement`,
-                    )
-                  }
+                  assert(!set, `if you mutate state remove return statement`)
+
                   mutable[key] = value
                 } else {
                   mutable[key] = proxy.value
@@ -63,40 +60,12 @@ export class Reactive<T, M extends RawMutations<T> = RawMutations<T>> {
   }
 
   set state(v) {
-    if (process.env.NODE_ENV !== 'production') {
-      throw new Error(
-        `use store.replaceState() to explicit replace store state.`,
-      )
-    }
+    assert(
+      process.env.NODE_ENV === 'production',
+      `use store.replaceState() to explicit replace store state.`,
+    )
   }
 }
 
 export const state = <T, M extends RawMutations<T>>(state: T, mutations: M) =>
   new Reactive(state, mutations)
-
-export const concatState = <S extends Record<string, Reactive<any, any>>>(
-  modules: S,
-) => {
-  const entries = Object.entries(modules)
-
-  const mappedState = entries.map(([key, module]) => [key, module._state.value])
-
-  const mappedMutations = entries.map(([key, module]) => [
-    key,
-    module._mutations,
-  ])
-
-  const combined = state(
-    Object.fromEntries(mappedState),
-    Object.fromEntries(mappedMutations),
-  )
-
-  return combined as Reactive<
-    {
-      [K in keyof S]: S[K]['state']
-    },
-    {
-      [K in keyof S]: S[K]['_mutations']
-    }
-  >
-}

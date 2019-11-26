@@ -16,21 +16,25 @@ describe('install()', () => {
   })
 })
 
-// describe('useStore()', () => {
-//   it('returns store', () => {
-//     const localVue = createLocalVue()
+describe('useStore()', () => {
+  it('returns store', () => {
+    const localVue = createLocalVue()
 
-//     localVue.use(CompositionApi)
-//     const store = createStore(state({}, {}))
+    localVue.use(CompositionApi)
+    const store = createStore(state({}, {}))
 
-//     localVue.use(VuexCompositionApi, store)
+    localVue.use(VuexCompositionApi, store)
 
-//     new localVue({
-//       setup() {
-//         const injectedStore = useStore()
-//         expect(injectedStore).toStrictEqual(store)
-//         return { injectedStore }
-//       },
-//     })
-//   })
-// })
+    new localVue({
+      components: {
+        test: {
+          setup() {
+            const injectedStore = useStore()
+            expect(injectedStore).toStrictEqual(store)
+            return { injectedStore }
+          },
+        },
+      },
+    })
+  })
+})
