@@ -1,4 +1,6 @@
-type RawMutation<S, P = any> = (state: S, payload: P) => S | void
+import { Ref } from '@vue/composition-api'
+
+type RawMutation<S, P = any> = (state: Ref<S>, payload: P) => S | void
 
 export type RawMutations<S> = NonNullable<
   | Exclude<

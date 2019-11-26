@@ -1,6 +1,6 @@
 import 'core-js/features/object/from-entries'
 import { MapRawMutations, RawMutations } from './mutation'
-import { Ref, ref } from '@vue/composition-api'
+import { Ref, computed, ref } from '@vue/composition-api'
 import { travel } from '../utils'
 
 export class Reactive<T, M extends RawMutations<T> = RawMutations<T>> {
@@ -17,28 +17,41 @@ export class Reactive<T, M extends RawMutations<T> = RawMutations<T>> {
       keys: string[] = [],
     ): MapRawMutations<M> =>
       Object.fromEntries(
-        Object.entries(mutations).map(([key, mutation]) => {
+        Object.entries(mutations).map(([type, mutation]) => {
           if (mutation instanceof Function) {
             return [
-              key,
+              type,
               (payload: P) => {
-                keys.unshift('value')
-                const [key] = keys.splice(-1, 1)
+                const mutationKeys = keys.slice()
+                mutationKeys.unshift('value')
+                const [key] = mutationKeys.splice(-1)
 
-                const mutable = travel(this._state, keys)
-                // const readable = travel(this.state, keys)
-                // if (key) {
-                const value = mutation(mutable[key], payload)
-                if (value) {
+                const mutable = travel(this._state, mutationKeys)
+
+                let set = false
+                const proxy = computed({
+                  get: () => mutable[key],
+                  set: v => {
+                    set = true
+                    mutable[key] = v
+                  },
+                })
+                const value = mutation(proxy, payload)
+
+                if (value !== undefined) {
+                  if (set) {
+                    throw new Error(
+                      `if you mutate state remove return statement`,
+                    )
+                  }
                   mutable[key] = value
+                } else {
+                  mutable[key] = proxy.value
                 }
-                // } else {
-                //   this._state.value = mutation(this._state.value, payload)
-                // }
               },
             ]
           }
-          return [key, mapMutation(mutation, [...keys, key])]
+          return [type, mapMutation(mutation, [...keys, type])]
         }),
       )
 
