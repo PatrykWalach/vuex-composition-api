@@ -1,26 +1,12 @@
 {
   "compilerOptions": {
-    "declaration": true,
     "strict": true,
-    "outDir": "dist",
     "module": "esnext",
-    "target": "esnext",
+    "esModuleInterop": true,
     "moduleResolution": "node",
-    "esModuleInterop":true,
-    "noImplicitAny":true,
-    "types": [
-      "node",
-      "jest"
-    ],
-    "lib": [
-      "esnext",
-      "dom"
-    ]
+    "target": "es2020",
+    "types": ["node", "jest"]
   },
-  "include": [
-    "src/**/*.ts", "src/vue.d.ts"
-  ],
-  "exclude": [
-    "node_modules"
-  ]
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "**/__tests__/*"]
 }

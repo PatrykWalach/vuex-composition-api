@@ -1,40 +1,138 @@
-import VuexCompositionApi, { createStore, state, useStore } from '../../src'
-import CompositionApi from '@vue/composition-api'
+import { createVuex, defineStore, useStore } from '../../src'
+import { h, ref, defineComponent } from 'vue'
+import { mount } from '@vue/test-utils'
 
-import { createLocalVue } from '@vue/test-utils'
+describe('vuex', () => {
+  const counterOptions = defineStore('counter', () => {
+    const value = ref(0)
 
-describe('install()', () => {
-  it('can be installed', () => {
-    const localVue = createLocalVue()
+    function increment() {
+      value.value++
+    }
 
-    localVue.use(CompositionApi)
-    const store = createStore(state({}, {}))
-
-    expect(() => {
-      localVue.use(VuexCompositionApi, store)
-    }).not.toThrow()
+    return {
+      value,
+      increment,
+    }
   })
-})
 
-describe('useStore()', () => {
-  it('returns store', () => {
-    const localVue = createLocalVue()
+  it('works composition', async () => {
+    // const counterOptions = defineStore({
+    //   state: () => ({ value: 0 }),
 
-    localVue.use(CompositionApi)
-    const store = createStore(state({}, {}))
+    //   getters: {
+    //     isIncremented() {
+    //       return this.state > 0
+    //     },
+    //   },
 
-    localVue.use(VuexCompositionApi, store)
+    //   actions: {
+    //     increment() {
+    //       this.value++
+    //     },
+    //   },
+    // })
 
-    new localVue({
-      components: {
-        test: {
-          setup() {
-            const injectedStore = useStore()
-            expect(injectedStore).toStrictEqual(store)
-            return { injectedStore }
-          },
+    const vuex = createVuex()
+
+    const wrapper = mount(
+      defineComponent({
+        render() {
+          return [
+            h('button', { onClick: this.counter.increment }),
+            h('div', this.counter.value),
+          ]
         },
-      },
+        setup() {
+          const counter = useStore(counterOptions)
+          return { counter }
+        },
+        // use: () => ({
+        //   counter: counterOptions,
+        // }),
+      }),
+      { global: { plugins: [vuex] } },
+    )
+
+    expect(wrapper.find('div').text()).toStrictEqual('0')
+
+    await wrapper.find('button').trigger('click')
+
+    expect(wrapper.find('div').text()).toStrictEqual('1')
+  })
+  it('works setup nested', async () => {
+    const rootCounterOptions = defineStore('rootCounter', ({ use }) => {
+      const counter = use(counterOptions)
+
+      function incrementTwice() {
+        counter.increment()
+        counter.increment()
+      }
+
+      return {
+        incrementTwice,
+      }
     })
+
+    const vuex = createVuex()
+
+    const wrapper = mount(
+      defineComponent({
+        render() {
+          return [
+            h('button', { onClick: this.rootCounter.incrementTwice }),
+            h('div', this.counter.value),
+          ]
+        },
+        setup() {
+          const counter = useStore(counterOptions)
+          const rootCounter = useStore(rootCounterOptions)
+          return { counter, rootCounter }
+        },
+      }),
+      { global: { plugins: [vuex] } },
+    )
+
+    expect(wrapper.find('div').text()).toStrictEqual('0')
+
+    await wrapper.find('button').trigger('click')
+
+    expect(wrapper.find('div').text()).toStrictEqual('2')
+  })
+  it('works plugin', async () => {
+    const withPluginOptions = defineStore('withPlugin', ({ fn }) => {
+      function callFn(payload: unknown) {
+        fn(payload)
+      }
+
+      return {
+        callFn,
+      }
+    })
+
+    const fn = jest.fn()
+
+    const vuex = createVuex({
+      plugins: [(provide) => provide('fn', fn)],
+    })
+
+    const wrapper = mount(
+      defineComponent({
+        render() {
+          return [h('button', { onClick: this.withPlugin.callFn })]
+        },
+        setup() {
+          const withPlugin = useStore(withPluginOptions)
+          return { withPlugin }
+        },
+      }),
+      { global: { plugins: [vuex] } },
+    )
+
+    expect(fn).not.toBeCalled()
+
+    await wrapper.find('button').trigger('click')
+
+    expect(fn).toBeCalled()
   })
 })

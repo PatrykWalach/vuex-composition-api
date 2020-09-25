@@ -1,0 +1,105 @@
+version: 2
+defaults: &defaults
+  working_directory: ~/repo
+  docker:
+    - image: circleci/node:12.13
+jobs:
+  test:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ~/repo
+      - run: npm run test
+  codecov:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ~/repo
+      - run: npm run codecov
+  coverage:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ~/repo
+      - run: npm run coverage
+      - persist_to_workspace:
+          root: ~/repo
+          paths: .
+      - store_artifacts:
+          path: /coverage
+  build:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ~/repo
+      - run: npm run build
+      - persist_to_workspace:
+          root: ~/repo
+          paths: .
+      - store_artifacts:
+          path: /pkg
+  deploy:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ~/repo
+      - run: echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/repo/pkg/.npmrc
+      - run: cd pkg && npm publish
+
+  install:
+    <<: *defaults
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "package.json" }}
+            - v1-dependencies-
+      - run: npm ci
+      - save_cache:
+          paths:
+            - node_modules
+          key: v1-dependencies-{{ checksum "package.json" }}
+      - persist_to_workspace:
+          root: ~/repo
+          paths: .
+workflows:
+  version: 2
+  main:
+    jobs:
+      - install:
+          filters:
+            tags:
+              only: /.*/
+      - build:
+          filters:
+            tags:
+              only: /.*/
+          requires:
+            - install
+      - test:
+          filters:
+            tags:
+              only: /.*/
+          requires:
+            - install
+      - coverage:
+          filters:
+            tags:
+              only: /.*/
+          requires:
+            - install
+      - codecov:
+          filters:
+            tags:
+              only: /.*/
+          requires:
+            - coverage
+      - deploy:
+          requires:
+            - test
+            - build
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/
