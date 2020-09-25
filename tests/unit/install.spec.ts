@@ -2,6 +2,13 @@ import { createVuex, defineStore, useStore } from '../../src'
 import { h, ref, defineComponent } from 'vue'
 import { mount } from '@vue/test-utils'
 
+declare module '../../src' {
+  interface Context {
+   fn: jest.Mock<unknown, unknown[]>
+ }
+}
+
+
 describe('vuex', () => {
   const counterOptions = defineStore('counter', () => {
     const value = ref(0)
@@ -101,8 +108,8 @@ describe('vuex', () => {
   })
   it('works plugin', async () => {
     const withPluginOptions = defineStore('withPlugin', ({ fn }) => {
-      function callFn(payload: unknown) {
-        fn(payload)
+      function callFn() {
+        fn()
       }
 
       return {
